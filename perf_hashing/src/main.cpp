@@ -3,15 +3,13 @@
 //
 #include "Commons.h"
 #include "HTFlexible.h"
+#include "HTLibrary.h"
 #include <iostream>
 
 int main() {
-    HTFlexible htf;
-    Book a("maria"), b("ivan"), c("george");
-    htf.push(a);
-    htf.push(b);
-    htf.push(c);
-    htf.roll();
-
+    vector <Book> f;
+    Book b("hey");
+    f.push_back(b);
+    HTLibrary lib(f);
     return 0;
 }

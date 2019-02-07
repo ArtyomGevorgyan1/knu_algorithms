@@ -11,8 +11,9 @@ class Book {
 
 public:
     explicit Book(string author);
+    explicit Book();
 
-    static unsigned int staticHash(Book book, Params params);
+    static unsigned int staticHash(string author, Params params);
     unsigned int hash(Params params);
     string retAuthor();
 

@@ -20,11 +20,14 @@ unsigned int Book::hash(Params params) {
 Book::Book(string author) :
 mAuthor(author) {}
 
-unsigned int Book::staticHash(Book book, Params params) {
-    string author = book.retAuthor();
+unsigned int Book::staticHash(string author, Params params) {
     unsigned int hv = 0;
     for (int i = 0; i < author.length(); i++) {
         hv += author[i];
     }
     return hv;
+}
+
+Book::Book() {
+    mAuthor = "NOTAVALUE\n";
 }

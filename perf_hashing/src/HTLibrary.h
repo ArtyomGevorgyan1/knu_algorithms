@@ -10,10 +10,16 @@
 #include "HTFlexible.h"
 
 class HTLibrary {
+public:
+    HTLibrary();
+    HTLibrary(vector <Book> contents);
 
+private:
     Params mParams;
-    void addToHT(Book book);
     vector <HTFlexible> mTable;
+    vector <Book> mContents;
+    unsigned int mSize;
+    void rollAndFill();
 };
 
 #endif //PERF_HASHING_HTLIBRARY_H

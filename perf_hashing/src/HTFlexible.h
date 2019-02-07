@@ -12,16 +12,21 @@ class HTFlexible {
 public:
 
     HTFlexible();
-    void roll();
 
     vector <Book> getContents() const;
     void push(Book book);
     int getSize() const;
 
+    void doShit();
+
 private:
     unsigned int mSize;
     vector <Book> mContents;
     Params mParams;
+
+    void roll();
+    void fill();
+    vector <Book> mSpace;
 };
 
 

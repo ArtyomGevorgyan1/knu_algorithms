@@ -14,16 +14,13 @@ vector <Book> HTFlexible::getContents() const {
 }
 
 void HTFlexible::roll() {
+    initParams();
+
     bool cont = false;
     while (!cont) {
-        initParams();
 
         int fst = getRandomInt() % 100;
         int sec = primes[0];
-
-        for (auto i : primes) {
-            std::cout << i << " ";
-        }
 
         Params params(getRandomInt() % 100, getRandomInt() % 100, primes[getRandomInt() % 100],
                 (mSize + 1) * (mSize + 1));
@@ -54,6 +51,15 @@ void HTFlexible::roll() {
 
 }
 
+void HTFlexible::fill() {
+    mSpace.resize(mParams.m);
+    for (int i = 0; i < mSize; i++) {
+        int hv = mContents[i].hash(mParams) % mParams.m;
+        mSpace[hv] = mContents[i];
+    }
+}
+
+
 void HTFlexible::push(Book book) {
     mContents.push_back(book);
     mSize++;
@@ -62,5 +68,9 @@ void HTFlexible::push(Book book) {
 HTFlexible::HTFlexible() :
 mSize(0)
 {
+}
 
+void HTFlexible::doShit() {
+    roll();
+    fill();
 }
