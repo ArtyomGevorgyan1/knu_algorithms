@@ -16,6 +16,9 @@ vector <Book> HTFlexible::getContents() const {
 void HTFlexible::roll() {
     initParams();
 
+
+    bool kupi_slona = true;
+
     bool cont = false;
     while (!cont) {
 
