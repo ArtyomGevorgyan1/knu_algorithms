@@ -27,6 +27,8 @@ inline int binPow(int x) {
     } else return 1;
 }
 
+
+/*
 inline vector <unsigned int> getPrimes() {
     vector <unsigned int> primes;
     unsigned int hmPrimes = 0;
@@ -44,15 +46,47 @@ inline vector <unsigned int> getPrimes() {
     return primes;
 }
 
-static vector <unsigned int> primes;
+namespace commons {
+    static vector <unsigned int> primes;
+}
+
 
 inline void initParams() {
+
+
+
     vector <unsigned int> ret = getPrimes();
     primes.resize(0);
     for (auto i : ret) {
         primes.push_back(i);
     }
+
+    for (auto i : primes) {
+        std::cout << i << " ";
+    }
+    std::cout << std::endl;
 }
+*/
+
+struct primes {
+    static primes& getInstance() {
+        static primes s;
+        return s;
+    }
+    unsigned int operator[](int id) {
+        return primes::getInstance().container[id];
+    }
+    primes() {
+        initPrimes();
+    }
+    primes(primes const &) = delete;
+    void operator = (primes const &) = delete;
+
+private:
+    vector <unsigned int> container;
+    void initPrimes();
+};
+
 
 inline unsigned int getRandomInt() {
     std::random_device rd;

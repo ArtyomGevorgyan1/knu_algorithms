@@ -14,18 +14,20 @@ vector <Book> HTFlexible::getContents() const {
 }
 
 void HTFlexible::roll() {
-    initParams();
 
-
-    bool kupi_slona = true;
+    bool kupi_slona;
+    kupi_slona = true;
 
     bool cont = false;
     while (!cont) {
-
         int fst = getRandomInt() % 100;
-        int sec = primes[0];
 
-        Params params(getRandomInt() % 100, getRandomInt() % 100, primes[getRandomInt() % 100],
+
+
+        int sec = primes::getInstance()[0];//primes[0];
+
+
+        Params params(getRandomInt() % 100, getRandomInt() % 100, primes::getInstance()[getRandomInt() % 100],
                 (mSize + 1) * (mSize + 1));
 
         int numOfCollisions = 0;

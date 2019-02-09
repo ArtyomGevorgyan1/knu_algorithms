@@ -27,9 +27,8 @@ void HTLibrary::rollAndFill()
 {
     bool cont = false;
     while (!cont) {
-        initParams();
 
-        Params params(getRandomInt() % 100, getRandomInt() % 100, primes[getRandomInt() % 100],
+        Params params(getRandomInt() % 100, getRandomInt() % 100, primes::getInstance()[getRandomInt() % 100],
                       31);
 
         /*
