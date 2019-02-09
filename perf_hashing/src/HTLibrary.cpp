@@ -34,24 +34,7 @@ void HTLibrary::rollAndFill()
         /*
          * можно придумать другую проверку - если сумма квадратов размеров вторичных ячеек превышает
          * n, то пробуем еще раз подобрать параметры функции
-         */
-
-        /*
-
-        int numOfCollisions = 0;
-
-
-        int countCollisions[params.m];
-        for (int i = 0; i < params.m; i++) {
-            countCollisions[i] = 0;
-        }
-
-
-        for (int i = 0; i < mSize; i++) {
-            Book curBook = mContents[i];
-            int hv = curBook.hash(params);
-            countCollisions[hv % params.m]++;
-        }
+         *
         */
 
         cont = true;
