@@ -9,6 +9,7 @@
 #include <string>
 #include <iostream>
 #include <random>
+#include <fstream>
 
 using std::string;
 using std::vector;
@@ -26,47 +27,6 @@ inline int binPow(int x) {
         else return binPow(x / 2) * binPow(x / 2);
     } else return 1;
 }
-
-
-/*
-inline vector <unsigned int> getPrimes() {
-    vector <unsigned int> primes;
-    unsigned int hmPrimes = 0;
-    unsigned int currTest = 3;
-    while (hmPrimes < 100) {
-        bool prime = true;
-        for (unsigned int i = 2; i < currTest; i++) {
-            if (currTest % i == 0) prime = false;
-        }
-        if (prime && currTest > 31) {primes.push_back(currTest); hmPrimes++;}
-        currTest++;
-    }
-
-    primes.resize(100);
-    return primes;
-}
-
-namespace commons {
-    static vector <unsigned int> primes;
-}
-
-
-inline void initParams() {
-
-
-
-    vector <unsigned int> ret = getPrimes();
-    primes.resize(0);
-    for (auto i : ret) {
-        primes.push_back(i);
-    }
-
-    for (auto i : primes) {
-        std::cout << i << " ";
-    }
-    std::cout << std::endl;
-}
-*/
 
 struct primes {
     static primes& getInstance() {

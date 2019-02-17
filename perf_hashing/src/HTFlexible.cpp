@@ -15,14 +15,9 @@ vector <Book> HTFlexible::getContents() const {
 
 void HTFlexible::roll() {
 
-    bool kupi_slona;
-    kupi_slona = true;
-
     bool cont = false;
     while (!cont) {
         int fst = getRandomInt() % 100;
-
-
 
         int sec = primes::getInstance()[0];//primes[0];
 

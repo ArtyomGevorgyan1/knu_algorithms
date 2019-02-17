@@ -12,7 +12,16 @@
 class HTLibrary {
 public:
     HTLibrary();
-    HTLibrary(vector <Book> contents);
+    explicit HTLibrary(vector <Book> contents);
+
+
+    /*debug methods*/
+    int getTableSize() {
+        return mTable.size();
+    }
+    vector <HTFlexible> getTable() {
+        return mTable;
+    }
 
 private:
     Params mParams;

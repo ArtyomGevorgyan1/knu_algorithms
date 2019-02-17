@@ -19,6 +19,14 @@ public:
 
     void doShit();
 
+
+
+    /*debug methods*/
+    vector <Book> getSpace() {
+        return  mSpace;
+    }
+
+
 private:
     unsigned int mSize;
     vector <Book> mContents;

@@ -40,14 +40,6 @@ void HTLibrary::rollAndFill()
         cont = true;
         mParams = params;
 
-        /*
-        for (int i = 0; i < params.m; i++) {
-            if (countCollisions[i] > 1) {
-                cont = false;
-            }
-        }
-        */
-
     }
 
     for (int i = 0; i < mSize; i++) {
@@ -61,3 +53,4 @@ void HTLibrary::rollAndFill()
     }
 
 }
+
