@@ -1,29 +1,36 @@
 #include <iostream>
+#include <stack>
+#include <fstream>
+
+using std::stack;
+using std::ofstream;
+using std::cout;
 
 #include "RBTree.h"
 
+
 int main() {
 
-    RBTree t;
+    /*
+    RBTree tree;
+    Node* p = RBTree::getGoodNode(4);
+    Node* l = RBTree::getGoodNode(1);
+    Node* r = RBTree::getGoodNode(7);
+    Node* rr = RBTree::getGoodNode(10);
+    p -> left = l;
+    p -> right = r;
+    l -> parent = r -> parent = p;
+    rr -> parent = r;
+    r -> right = rr;
+    Node* rl = RBTree::getGoodNode(6);
+    rl -> parent = r;
+    r -> left = rl;
+    tree.setRoot(p);
+    tree.leftRotate(p);
+    tree.rightRotate(r);
+    tree.show();
+    */
 
-
-    Node l;
-    l.key = 1;
-
-    Node r;
-    r.key = 2;
-
-    Node p;
-    p.key = 3;
-
-    p.left = &l;
-    p.right = &r;
-
-    l.right = l.left = nullptr;
-    r.left = r.right = nullptr;
-
-    t.setRoot(&p);
-    t.show();
 
     return 0;
 }
