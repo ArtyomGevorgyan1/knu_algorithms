@@ -94,6 +94,7 @@ Node *RBTree::getGoodNode(int v) {
 }
 
 void RBTree::insertFixup(Node *z) {
+
 }
 
 void RBTree::leftRotate(Node *x) {
