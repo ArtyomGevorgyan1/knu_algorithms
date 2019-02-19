@@ -32,7 +32,6 @@ public:
 
 private:
     void insertFixup(Node* z);
-
     void stackWrite();
 
     Node* root;

@@ -14,8 +14,6 @@ RBTree::RBTree() {
     root = nullptr;
 }
 
-//Node* RBTree::root = nullptr;
-
 Node *RBTree::getRoot() {
     return root;
 }
@@ -98,7 +96,40 @@ void RBTree::insertFixup(Node *z) {
 }
 
 void RBTree::leftRotate(Node *x) {
+    if (!x) return;
 
+    Node* y = nullptr;
+    if (x -> right) y = x -> right;
+
+    if (y) {
+        if (y -> left) {
+            y -> left -> parent = x;
+            x -> right = y -> left;
+        } else {
+            x -> right = nullptr;
+        }
+
+        if (x -> parent) {
+            y -> parent = x -> parent;
+
+            if (x -> parent -> left == x) {
+                x -> parent -> left = y;
+            } else if (x -> parent -> right == x) {
+                x -> parent -> right = y;
+            }
+        } else {
+            // cout << "haha\n";
+        }
+
+        x -> parent = y;
+        y -> left = x;
+
+        if (x == root) {
+            root = y;
+        }
+    } else {
+        return;
+    }
 }
 
 void RBTree::rightRotate(Node *x) {
