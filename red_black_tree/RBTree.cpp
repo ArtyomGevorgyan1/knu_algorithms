@@ -99,46 +99,8 @@ void RBTree::insertFixup(Node *z) {
 
 void RBTree::leftRotate(Node *x) {
 
-    Node* y = x -> right;
-    x -> right = y -> left;
-    if (y -> left) {
-        y -> left -> parent = x;
-    }
-
-    y -> parent = x -> parent;
-    if (x -> parent == nullptr) {
-        root = y;
-    }
-    else if (x -> parent -> left && x -> parent -> left == x) {
-        x -> parent -> left = y;
-    } else {
-        x -> parent -> right = y;
-    }
-    x -> parent = y;
-    y -> left = x;
 }
 
 void RBTree::rightRotate(Node *x) {
-    Node* y = x -> left;
-    if (y) {
-        x -> left = y -> right;
-    } else {
-        x -> left = nullptr;
-    }
-    //x -> left = y -> right;
 
-    if (y && y -> right) {
-        y -> right -> parent = x;
-    }
-    if (y&& y -> parent)y -> parent = x -> parent;
-    if (!(x->parent)) {
-        root = y;
-    }
-    else if (x == x -> parent -> left) {
-        x -> parent -> left = y;
-    } else {
-        x -> parent -> right = y;
-    }
-    if (y && y -> right)y -> right = x;
-    x -> parent = y;
 }
