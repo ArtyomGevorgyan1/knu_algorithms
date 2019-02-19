@@ -9,7 +9,12 @@
 
 using namespace std;
 
-Node* RBTree::root = nullptr;
+RBTree::RBTree() {
+    root = new Node;
+    root = nullptr;
+}
+
+//Node* RBTree::root = nullptr;
 
 Node *RBTree::getRoot() {
     return root;
@@ -70,7 +75,7 @@ void RBTree::insert(Node *i) {
     } else {
         y -> right = i;
     }
-    //insertFixup(i);
+    insertFixup(i);
 
 }
 
@@ -89,7 +94,6 @@ Node *RBTree::getGoodNode(int v) {
 }
 
 void RBTree::insertFixup(Node *z) {
-
 }
 
 void RBTree::leftRotate(Node *x) {
@@ -115,12 +119,17 @@ void RBTree::leftRotate(Node *x) {
 
 void RBTree::rightRotate(Node *x) {
     Node* y = x -> left;
-    x -> left = y -> right;
+    if (y) {
+        x -> left = y -> right;
+    } else {
+        x -> left = nullptr;
+    }
+    //x -> left = y -> right;
 
-    if (y -> right) {
+    if (y && y -> right) {
         y -> right -> parent = x;
     }
-    y -> parent = x -> parent;
+    if (y&& y -> parent)y -> parent = x -> parent;
     if (!(x->parent)) {
         root = y;
     }
@@ -129,6 +138,6 @@ void RBTree::rightRotate(Node *x) {
     } else {
         x -> parent -> right = y;
     }
-    y -> right = x;
+    if (y && y -> right)y -> right = x;
     x -> parent = y;
 }

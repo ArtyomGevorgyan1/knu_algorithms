@@ -18,9 +18,11 @@ struct Node {
 class RBTree {
 public:
 
+    RBTree();
+
     Node* getRoot();
     void setRoot(Node* r);
-    static Node* getGoodNode(int v);
+    Node* getGoodNode(int v);
 
     void insert(Node* i);
     void show();
@@ -33,7 +35,7 @@ private:
 
     void stackWrite();
 
-    static Node* root;
+    Node* root;
 };
 
 
