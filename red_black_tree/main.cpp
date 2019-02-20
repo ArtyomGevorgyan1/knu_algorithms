@@ -2,6 +2,7 @@
 #include <stack>
 #include <fstream>
 #include <vector>
+#include <set>
 
 using std::stack;
 using std::ofstream;
@@ -24,20 +25,12 @@ void deb(Node* f) {
 int main() {
     RBTree t;
 
-    Node *p = t.getGoodNode(4);
-    Node* l = t.getGoodNode(2);
-    Node* r = t.getGoodNode(6);
-    Node* rl = t.getGoodNode(5);
-    Node* rr = t.getGoodNode(7);
+    std::set <int> s;
 
-    t.insert(p);
-    t.insert(l);
-    t.insert(r);
-    t.insert(rl);
-    t.insert(rr);
+    for (int i = 0; i < 50; i++) {
+        t.insert(t.getGoodNode((i*i)%10000001));
+    }
+    t.show();
 
-    t.show();
-    t.leftRotate(p);
-    t.show();
     return 0;
 }
