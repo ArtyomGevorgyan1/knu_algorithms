@@ -29,10 +29,14 @@ public:
 
     void leftRotate(Node* x);
     void rightRotate(Node* x);
+    void transplant(Node* x, Node* y);
+    void deleteNode(Node* x);
+    void fixDeletion(Node* x);
 
 private:
     void insertFixup(Node* z);
     void stackWrite();
+
 
     Node* root;
 };

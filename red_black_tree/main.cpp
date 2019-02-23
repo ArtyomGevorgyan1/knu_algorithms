@@ -27,9 +27,20 @@ int main() {
 
     std::set <int> s;
 
-    for (int i = 0; i < 50; i++) {
-        t.insert(t.getGoodNode((i*i)%10000001));
+    Node* f;
+    Node* ff;
+    for (int i = 0; i < 15; i++) {
+
+
+
+        f = t.getGoodNode(i * i);
+        if (i * i == 169) {
+            ff = f;
+        }
+        t.insert(f);
     }
+
+    //t.deleteNode(ff);
     t.show();
 
     return 0;

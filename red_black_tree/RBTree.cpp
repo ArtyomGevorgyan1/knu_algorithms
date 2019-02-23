@@ -219,3 +219,81 @@ void RBTree::rightRotate(Node *x) {
         return;
     }
 }
+
+void RBTree::transplant(Node *x, Node *y) {
+    if (!x) return;
+    if (root == x) {
+        x -> parent = nullptr;
+    }
+
+    if (x -> parent == nullptr) {
+        root = y;
+    } else if (x -> parent -> left == x)  {
+        x -> parent -> left = y;
+    } else if (x -> parent -> right == x) {
+        x -> parent -> right = y;
+    }
+
+    if (y) y -> parent = x -> parent;
+}
+
+Node* treeMinimum(Node* z) {
+    Node* res = nullptr;
+    while (z) {
+        res = z;
+        z = z -> left;
+    }
+    return res;
+}
+
+void RBTree::deleteNode(Node *z) {
+    if (!z) return;
+
+    Node* nil = nullptr;
+    Node* y = z;
+    Node* x;
+    bool original = y -> color;
+
+    if (z -> left == nullptr) {
+        x = z -> right;
+        transplant(z, z -> right);
+    } else if (z -> right == nullptr) {
+        x = z -> left;
+        transplant(z, z -> left);
+    } else {
+        Node* y = treeMinimum(z -> right);
+        original = y -> color;
+        x = y -> right;
+
+        if (y -> parent == z) {
+            if (x)
+                x -> parent = y;
+            else {
+                nil = new Node;
+                nil -> color = 0;
+                nil -> parent = y;
+            }
+        }
+        else {
+            transplant(y, y -> right);
+            y -> right = z -> right;
+            y -> right -> parent = y;
+        }
+
+        y -> left = z -> left;
+        y -> left -> parent = y;
+        y -> color = z -> color;
+        transplant(z, y);
+    }
+
+    if (original == 0) {
+        if (nil) {
+            fixDeletion(nil);
+        } else {
+            fixDeletion(x);
+        }
+    }
+}
+
+void RBTree::fixDeletion(Node *x) {
+}
