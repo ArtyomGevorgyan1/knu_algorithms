@@ -248,52 +248,154 @@ Node* treeMinimum(Node* z) {
 
 void RBTree::deleteNode(Node *z) {
     if (!z) return;
-
     Node* nil = nullptr;
     Node* y = z;
     Node* x;
     bool original = y -> color;
-
     if (z -> left == nullptr) {
         x = z -> right;
+        if (!x) {
+            nil = new Node;
+            nil->color = 0;
+            nil->parent = z->parent;
+        }
         transplant(z, z -> right);
     } else if (z -> right == nullptr) {
         x = z -> left;
+        if (!x) {
+            nil = new Node;
+            nil->color = 0;
+            nil->parent = z->parent;
+        }
         transplant(z, z -> left);
     } else {
         Node* y = treeMinimum(z -> right);
         original = y -> color;
         x = y -> right;
 
+        bool ff = false;
         if (y -> parent == z) {
             if (x)
                 x -> parent = y;
             else {
+
+                ff = true;
                 nil = new Node;
                 nil -> color = 0;
-                nil -> parent = y;
+                //nil -> parent = y;
             }
+
         }
         else {
+
+            if (! (y -> right)) {
+                nil = new Node;
+                nil -> color = 0;
+                nil -> parent = y -> parent;
+            }
+
             transplant(y, y -> right);
             y -> right = z -> right;
             y -> right -> parent = y;
         }
-
         y -> left = z -> left;
         y -> left -> parent = y;
         y -> color = z -> color;
         transplant(z, y);
+        if (ff) {
+            nil -> parent = y -> parent;
+        }
     }
 
     if (original == 0) {
+
+
         if (nil) {
             fixDeletion(nil);
-        } else {
-            fixDeletion(x);
+        } else if (x) {
+            fixDeletion (x);
         }
     }
 }
 
 void RBTree::fixDeletion(Node *x) {
+
+    //show();
+    while (x != root && x -> color == 0) {
+
+
+
+        if (x == x -> parent -> left) {
+            Node* w = x -> parent -> right;
+            if (w && w -> color == 1) {
+                w -> color = 0;
+                x -> parent -> color = 1;
+                leftRotate(x -> parent);
+                w = x -> parent -> right;
+
+            }
+            if ((w && w -> left && w -> left -> color == 0 && w -> right && w -> right -> color == 0)
+                || (w && !(w -> left) && !(w -> right))){
+                w -> color = 1;
+                x = x -> parent;
+
+            }
+            else if ((w && w -> right -> color == 0) || (w && !(w -> right))) {
+
+
+                /// WARNING
+
+                if (w -> left)
+                    w -> left -> color = 0;
+                w -> color = 1;
+                rightRotate(w);
+                w = x -> parent -> right;
+
+            }
+
+            if (w) w -> color = x -> parent -> color;
+            x -> parent -> color = 0;
+            if (w && w -> right) w -> right -> color = 0;
+            leftRotate(x -> parent);
+            x = root;
+
+        } else {
+            Node* w = x -> parent -> left;
+            if (w && w -> color == 1) {
+                w -> color = 0;
+                x -> parent -> color = 1;
+                rightRotate(x -> parent);
+                w = x -> parent -> left;
+
+            }
+            if ((w && w -> right && w -> right -> color == 0 && w -> left && w -> left -> color == 0)
+                || (w && !(w -> right) && !(w -> left))
+                || (w && !(w -> right) && w -> left && w -> left -> color == 0)
+                || (w && !(w -> left) && w -> right && w -> right -> color == 0)){
+                w -> color = 1;
+                x = x -> parent;
+
+            }
+            else if ((w && w -> left -> color == 0) || (w && !(w -> left))) {
+
+
+                /// WARNING
+
+                if (w -> right)
+                    w -> right -> color = 0;
+                w -> color = 1;
+                leftRotate(w);
+                w = x -> parent -> left;
+
+            }
+
+            if (w) w -> color = x -> parent -> color;
+            x -> parent -> color = 0;
+            if (w && w -> left) w -> left -> color = 0;
+            rightRotate(x -> parent);
+            x = root;
+
+        }
+    }
+    x -> color = 0;
 }
