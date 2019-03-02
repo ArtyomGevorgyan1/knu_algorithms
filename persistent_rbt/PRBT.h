@@ -44,6 +44,7 @@ public:
 
 
     void pInsert(Node* i);
+
     void pDelete(Node* i);
     struct List {
         std::vector <Node*> roots;

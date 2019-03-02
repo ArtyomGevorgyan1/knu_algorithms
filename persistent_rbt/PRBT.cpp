@@ -127,17 +127,17 @@ void PRBT::insertFixup(Node *z, int ind) {
         if (z -> parent == z -> parent ->parent -> left) {
             Node* y = z -> parent -> parent -> right;
             if (y && y -> color == 1) {
-                z -> parent -> color = 0;
-                y -> color = 0;
-                z -> parent -> parent -> color = 1;
+                z -> parent -> color = false;
+                y -> color = false;
+                z -> parent -> parent -> color = true;
                 z = z -> parent -> parent;
             } else {
                 if (z -> parent -> right == z) {
                     z = z -> parent;
                     leftRotate(z, ind);
                 }
-                z -> parent -> color = 0;
-                z -> parent -> parent -> color = 1;
+                z -> parent -> color = false;
+                z -> parent -> parent -> color = true;
                 rightRotate(z -> parent -> parent, ind);
 
             }
@@ -145,17 +145,17 @@ void PRBT::insertFixup(Node *z, int ind) {
 
             Node* y = z -> parent -> parent -> left;
             if (y && y -> color == 1) {
-                z -> parent -> color = 0;
-                y -> color = 0;
-                z -> parent -> parent -> color = 1;
+                z -> parent -> color = false;
+                y -> color = false;
+                z -> parent -> parent -> color = true;
                 z = z -> parent -> parent;
             } else {
                 if (z -> parent -> left == z) {
                     z = z -> parent;
                     rightRotate(z, ind);
                 }
-                z -> parent -> color = 0;
-                z -> parent -> parent -> color = 1;
+                z -> parent -> color = false;
+                z -> parent -> parent -> color = true;
                 leftRotate(z -> parent -> parent, ind);
             }
         }
@@ -164,9 +164,9 @@ void PRBT::insertFixup(Node *z, int ind) {
 
 
     if (ind == -1 && root) {
-        root -> color = 0;
+        root -> color = false;
     } else {
-        vers.roots[ind] -> color = 0;
+        vers.roots[ind] -> color = false;
     }
 
 
@@ -317,7 +317,7 @@ void PRBT::deleteNode(Node *z) {
         x = z -> right;
         if (!x) {
             nil = new Node;
-            nil->color = 0;
+            nil->color = false;
             nil->parent = z->parent;
         }
         transplant(z, z -> right);
@@ -325,7 +325,7 @@ void PRBT::deleteNode(Node *z) {
         x = z -> left;
         if (!x) {
             nil = new Node;
-            nil->color = 0;
+            nil->color = false;
             nil->parent = z->parent;
         }
         transplant(z, z -> left);
@@ -342,7 +342,7 @@ void PRBT::deleteNode(Node *z) {
 
                 ff = true;
                 nil = new Node;
-                nil -> color = 0;
+                nil -> color = false;
 
             }
 
@@ -351,7 +351,7 @@ void PRBT::deleteNode(Node *z) {
 
             if (! (y -> right)) {
                 nil = new Node;
-                nil -> color = 0;
+                nil -> color = false;
                 nil -> parent = y -> parent;
             }
 
@@ -388,15 +388,15 @@ void PRBT::fixDeletion(Node *x, int ind) {
         if (x == x -> parent -> left) {
             Node* w = x -> parent -> right;
             if (w && w -> color == 1) {
-                w -> color = 0;
-                x -> parent -> color = 1;
+                w -> color = false;
+                x -> parent -> color = true;
                 leftRotate(x -> parent);
                 w = x -> parent -> right;
 
             }
             if ((w && w -> left && w -> left -> color == 0 && w -> right && w -> right -> color == 0)
                 || (w && !(w -> left) && !(w -> right))){
-                w -> color = 1;
+                w -> color = true;
                 x = x -> parent;
 
             }
@@ -404,24 +404,24 @@ void PRBT::fixDeletion(Node *x, int ind) {
 
 
                 if (w -> left)
-                    w -> left -> color = 0;
-                w -> color = 1;
+                    w -> left -> color = false;
+                w -> color = true;
                 rightRotate(w);
                 w = x -> parent -> right;
 
             }
 
             if (w) w -> color = x -> parent -> color;
-            x -> parent -> color = 0;
-            if (w && w -> right) w -> right -> color = 0;
+            x -> parent -> color = false;
+            if (w && w -> right) w -> right -> color = false;
             leftRotate(x -> parent);
             x = root;
 
         } else {
             Node* w = x -> parent -> left;
             if (w && w -> color == 1) {
-                w -> color = 0;
-                x -> parent -> color = 1;
+                w -> color = false;
+                x -> parent -> color = true;
                 rightRotate(x -> parent);
                 w = x -> parent -> left;
 
@@ -430,7 +430,7 @@ void PRBT::fixDeletion(Node *x, int ind) {
                 || (w && !(w -> right) && !(w -> left))
                 || (w && !(w -> right) && w -> left && w -> left -> color == 0)
                 || (w && !(w -> left) && w -> right && w -> right -> color == 0)){
-                w -> color = 1;
+                w -> color = true;
                 x = x -> parent;
 
             }
@@ -438,22 +438,22 @@ void PRBT::fixDeletion(Node *x, int ind) {
 
 
                 if (w -> right)
-                    w -> right -> color = 0;
-                w -> color = 1;
+                    w -> right -> color = false;
+                w -> color = true;
                 leftRotate(w);
                 w = x -> parent -> left;
 
             }
 
             if (w) w -> color = x -> parent -> color;
-            x -> parent -> color = 0;
-            if (w && w -> left) w -> left -> color = 0;
+            x -> parent -> color = false;
+            if (w && w -> left) w -> left -> color = false;
             rightRotate(x -> parent);
             x = root;
 
         }
     }
-    x -> color = 0;
+    x -> color = false;
 }
 
 
@@ -491,12 +491,13 @@ void PRBT::pDelete(Node *i) {
         }
     }
 }
+
  */
 
 void PRBT::pInsert(Node *i) {
-    Node* nr = new Node;
+    auto nr = new Node;
 
-    if (vers.roots.size() > 0) {
+    if (!vers.roots.empty()) {
         *nr = *vers.roots[vers.roots.size() - 1];
     } else {
         nr = nullptr;
@@ -509,7 +510,7 @@ void PRBT::pInsert(Node *i) {
     while (cur) {
         prev = cur;
         if (i -> key < cur -> key) {
-            Node* nl = new Node;
+            auto nl = new Node;
             if (cur -> left)
                 *nl = *cur -> left;
             else
@@ -521,7 +522,7 @@ void PRBT::pInsert(Node *i) {
 
             cur = cur -> left;
         } else {
-            Node* nl = new Node;
+            auto nl = new Node;
 
             if (cur -> right)
                 *nl = *cur -> right;
