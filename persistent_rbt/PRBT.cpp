@@ -307,7 +307,9 @@ Node* treeMinimum(Node* z) {
     return res;
 }
 
-void PRBT::deleteNode(Node *z) {
+void PRBT::deleteNode(Node *z, int ind) {
+
+
     if (!z) return;
     Node* nil = nullptr;
     Node* y = z;
@@ -316,33 +318,83 @@ void PRBT::deleteNode(Node *z) {
     if (z -> left == nullptr) {
         x = z -> right;
         if (!x) {
+
+            bool isRoot = !(y -> parent);
+            bool left;
+
+                if (!isRoot && y == y -> parent -> left)
+                    left = true;
+                else if (!isRoot && y == y -> parent -> right)
+                    left = false;
+
             nil = new Node;
             nil->color = false;
             nil->parent = z->parent;
+
+            transplant(z, z -> right, ind);
+
+            if (!isRoot) {
+                if (left) {
+                    nil -> parent -> left = nil;
+                } else {
+                    nil -> parent -> right = nil;
+                }
+            }
+
+        } else {
+            transplant(z, z -> right, ind);
         }
-        transplant(z, z -> right);
+        //transplant(z, z -> right, ind);
     } else if (z -> right == nullptr) {
         x = z -> left;
         if (!x) {
+
+            bool isRoot = !(y -> parent);
+            bool left;
+
+            if (!isRoot && y == y -> parent -> left)
+                left = true;
+            else if (!isRoot && y == y -> parent -> right)
+                left = false;
+
             nil = new Node;
             nil->color = false;
             nil->parent = z->parent;
+
+            transplant(z, z -> right, ind);
+
+            if (!isRoot) {
+                if (left) {
+                    nil -> parent -> left = nil;
+                } else {
+                    nil -> parent -> right = nil;
+                }
+            }
+
+        } else {
+            transplant(z, z -> left, ind);
         }
-        transplant(z, z -> left);
+        //transplant(z, z -> left, ind);
     } else {
         Node* y = treeMinimum(z -> right);
         original = y -> color;
         x = y -> right;
 
-        bool ff = false;
+        bool sh = false;
+        bool gg;
+        bool left;
+
         if (y -> parent == z) {
             if (x)
                 x -> parent = y;
             else {
+                sh = true;
+                gg = true;
 
-                ff = true;
                 nil = new Node;
                 nil -> color = false;
+
+                left = (y == y -> parent -> left);
 
             }
 
@@ -350,21 +402,37 @@ void PRBT::deleteNode(Node *z) {
         else {
 
             if (! (y -> right)) {
+                sh = true;
+                gg = false;
+                left = (y == y -> parent -> left);
+
                 nil = new Node;
                 nil -> color = false;
                 nil -> parent = y -> parent;
+
             }
 
-            transplant(y, y -> right);
+            transplant(y, y -> right, ind);
             y -> right = z -> right;
             y -> right -> parent = y;
         }
         y -> left = z -> left;
         y -> left -> parent = y;
         y -> color = z -> color;
-        transplant(z, y);
-        if (ff) {
+        transplant(z, y, ind);
+        if (sh && gg) {
             nil -> parent = y -> parent;
+            if (left) {
+                nil -> parent -> left = nil;
+            } else {
+                nil -> parent -> right = nil;
+            }
+        } else if (sh && !gg) {
+            if (left) {
+                nil -> parent -> left = nil;
+            } else {
+                nil -> parent -> right = nil;
+            }
         }
     }
 
@@ -372,88 +440,190 @@ void PRBT::deleteNode(Node *z) {
 
 
         if (nil) {
-            fixDeletion(nil);
+
+
+            fixDeletion(nil, ind, true);
+
         } else if (x) {
-            fixDeletion (x);
+
+
+            fixDeletion (x, ind);
         }
     }
 }
 
-void PRBT::fixDeletion(Node *x, int ind) {
+void PRBT::fixDeletion(Node *x, int ind, bool isNil) {
 
-    while (x != root && x -> color == 0) {
+    if (ind == -1) {
+        while (x != root && x -> color == 0) {
 
 
+            // возможен баг, нужно прописать проверку nil == x.p.left, nil != nullptr
+            if (x == x -> parent -> left) {
+                Node* w = x -> parent -> right;
+                if (w && w -> color == 1) {
+                    w -> color = false;
+                    x -> parent -> color = true;
+                    leftRotate(x -> parent);
+                    w = x -> parent -> right;
 
-        if (x == x -> parent -> left) {
-            Node* w = x -> parent -> right;
-            if (w && w -> color == 1) {
-                w -> color = false;
-                x -> parent -> color = true;
+                }
+                if ((w && w -> right && w -> right -> color == 0 && w -> left && w -> left -> color == 0)
+                    || (w && !(w -> right) && !(w -> left))
+                    || (w && !(w -> right) && w -> left && w -> left -> color == 0)
+                    || (w && !(w -> left) && w -> right && w -> right -> color == 0)){
+                    w -> color = true;
+                    x = x -> parent;
+
+                }
+                else if ((w && w -> right -> color == 0) || (w && !(w -> right))) {
+
+
+                    if (w -> left)
+                        w -> left -> color = false;
+                    w -> color = true;
+                    rightRotate(w);
+                    w = x -> parent -> right;
+
+                }
+
+                if (w) w -> color = x -> parent -> color;
+                x -> parent -> color = false;
+                if (w && w -> right) w -> right -> color = false;
                 leftRotate(x -> parent);
-                w = x -> parent -> right;
+                x = root;
 
-            }
-            if ((w && w -> left && w -> left -> color == 0 && w -> right && w -> right -> color == 0)
-                || (w && !(w -> left) && !(w -> right))){
-                w -> color = true;
-                x = x -> parent;
+            } else {
+                Node* w = x -> parent -> left;
+                if (w && w -> color == 1) {
+                    w -> color = false;
+                    x -> parent -> color = true;
+                    rightRotate(x -> parent);
+                    w = x -> parent -> left;
 
-            }
-            else if ((w && w -> right -> color == 0) || (w && !(w -> right))) {
+                }
+                if ((w && w -> right && w -> right -> color == 0 && w -> left && w -> left -> color == 0)
+                    || (w && !(w -> right) && !(w -> left))
+                    || (w && !(w -> right) && w -> left && w -> left -> color == 0)
+                    || (w && !(w -> left) && w -> right && w -> right -> color == 0)){
+                    w -> color = true;
+                    x = x -> parent;
+
+                }
+                else if ((w && w -> left -> color == 0) || (w && !(w -> left))) {
 
 
-                if (w -> left)
-                    w -> left -> color = false;
-                w -> color = true;
-                rightRotate(w);
-                w = x -> parent -> right;
+                    if (w -> right)
+                        w -> right -> color = false;
+                    w -> color = true;
+                    leftRotate(w);
+                    w = x -> parent -> left;
 
-            }
+                }
 
-            if (w) w -> color = x -> parent -> color;
-            x -> parent -> color = false;
-            if (w && w -> right) w -> right -> color = false;
-            leftRotate(x -> parent);
-            x = root;
-
-        } else {
-            Node* w = x -> parent -> left;
-            if (w && w -> color == 1) {
-                w -> color = false;
-                x -> parent -> color = true;
+                if (w) w -> color = x -> parent -> color;
+                x -> parent -> color = false;
+                if (w && w -> left) w -> left -> color = false;
                 rightRotate(x -> parent);
-                w = x -> parent -> left;
+                x = root;
 
             }
-            if ((w && w -> right && w -> right -> color == 0 && w -> left && w -> left -> color == 0)
-                || (w && !(w -> right) && !(w -> left))
-                || (w && !(w -> right) && w -> left && w -> left -> color == 0)
-                || (w && !(w -> left) && w -> right && w -> right -> color == 0)){
-                w -> color = true;
-                x = x -> parent;
-
-            }
-            else if ((w && w -> left -> color == 0) || (w && !(w -> left))) {
-
-
-                if (w -> right)
-                    w -> right -> color = false;
-                w -> color = true;
-                leftRotate(w);
-                w = x -> parent -> left;
-
-            }
-
-            if (w) w -> color = x -> parent -> color;
-            x -> parent -> color = false;
-            if (w && w -> left) w -> left -> color = false;
-            rightRotate(x -> parent);
-            x = root;
-
         }
+        x -> color = false;
     }
-    x -> color = false;
+
+    else {
+        while (x != vers.roots[ind] && x -> color == 0) {
+
+            if (x == x -> parent -> left) {
+
+                if (isNil) {
+                    x -> parent -> left = nullptr;
+                }
+
+                Node* w = x -> parent -> right;
+                if (w && w -> color == 1) {
+                    w -> color = false;
+                    x -> parent -> color = true;
+                    leftRotate(x -> parent, ind);
+                    w = x -> parent -> right;
+                }
+                if ((w && w -> right && w -> right -> color == 0 && w -> left && w -> left -> color == 0)
+                    || (w && !(w -> right) && !(w -> left))
+                    || (w && !(w -> right) && w -> left && w -> left -> color == 0)
+                    || (w && !(w -> left) && w -> right && w -> right -> color == 0)){
+
+                    w -> color = true;
+                    x = x -> parent;
+
+                }
+                else if ((w && w -> right -> color == 0) || (w && !(w -> right))) {
+
+
+                    if (w -> left)
+                        w -> left -> color = false;
+                    w -> color = true;
+                    rightRotate(w, ind);
+                    w = x -> parent -> right;
+
+                }
+
+                if (w) w -> color = x -> parent -> color;
+                x -> parent -> color = false;
+                if (w && w -> right) w -> right -> color = false;
+                leftRotate(x -> parent, ind);
+                /// ind
+                x = vers.roots[vers.roots.size() - 1];
+
+            } else {
+
+                if (isNil) {
+                    x -> parent -> right = nullptr;
+                }
+
+                Node* w = x -> parent -> left;
+
+                if (w && w -> color == 1) {
+
+                    w -> color = false;
+                    x -> parent -> color = true;
+                    rightRotate(x -> parent, ind);
+                    w = x -> parent -> left;
+
+                }
+                if ((w && w -> right && w -> right -> color == 0 && w -> left && w -> left -> color == 0)
+
+                    || (w && !(w -> right) && !(w -> left))
+                    || (w && !(w -> right) && w -> left && w -> left -> color == 0)
+                    || (w && !(w -> left) && w -> right && w -> right -> color == 0)){
+
+                    w -> color = true;
+                    x = x -> parent;
+
+                }
+                else if ((w && w -> left -> color == 0) || (w && !(w -> left))) {
+
+
+                    if (w -> right)
+                        w -> right -> color = false;
+                    w -> color = true;
+                    leftRotate(w, ind);
+                    w = x -> parent -> left;
+
+                }
+
+                if (w) w -> color = x -> parent -> color;
+                x -> parent -> color = false;
+                if (w && w -> left) w -> left -> color = false;
+                rightRotate(x -> parent, ind);
+                x = vers.roots[vers.roots.size() - 1];
+
+            }
+        }
+        x -> color = false;
+    }
+
+
 }
 
 
@@ -493,6 +663,56 @@ void PRBT::pDelete(Node *i) {
 }
 
  */
+
+
+// the i node must be in the tree
+void PRBT::pDelete(Node *i) {
+
+
+    auto nr = new Node;
+
+    if (!vers.roots.empty()) {
+        *nr = *vers.roots[vers.roots.size() - 1];
+    } else {
+        nr = nullptr;
+    }
+
+    vers.roots.push_back(nr);
+
+    Node* cur = nr;
+    while (cur) {
+        if (i -> key == cur -> key) {
+            deleteNode(cur, vers.roots.size() - 1);
+            break;
+        }
+        else if (i -> key < cur -> key) {
+            auto nl = new Node;
+            if (cur -> left)
+                *nl = *cur -> left;
+            else
+                nl = nullptr;
+
+            if (nl)
+                nl -> parent = cur;
+            cur -> left = nl;
+
+            cur = cur -> left;
+        } else {
+            auto nl = new Node;
+
+            if (cur -> right)
+                *nl = *cur -> right;
+            else
+                nl = nullptr;
+
+            if (nl)
+                nl -> parent = cur;
+            cur -> right = nl;
+
+            cur = cur -> right;
+        }
+    }
+}
 
 void PRBT::pInsert(Node *i) {
     auto nr = new Node;

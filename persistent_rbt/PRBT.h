@@ -33,7 +33,7 @@ public:
     Node* getGoodNode(int v);
 
     void insert(Node* i);
-    void deleteNode(Node* x);
+    void deleteNode(Node* x, int ind = -1);
 
     void show(int ind = -1);
 
@@ -52,7 +52,7 @@ public:
 
 private:
     void insertFixup(Node* z, int ind = -1);
-    void fixDeletion(Node* x, int ind = -1);
+    void fixDeletion(Node* x, int ind = -1, bool isNil = false);
     void stackWrite(int ind = -1);
 
     Node* root;

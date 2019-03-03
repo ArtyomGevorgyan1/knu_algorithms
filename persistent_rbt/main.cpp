@@ -7,7 +7,6 @@ int main() {
     PRBT t;
 
 
-    // test
     Node* f;
     vector <Node*> vec;
     for (int i = 1; i < 10; i++) {
@@ -18,6 +17,9 @@ int main() {
     for (auto i : vec)
         t.pInsert(i);
 
+    for (auto i: vec) {
+        t.pDelete(i);
+    }
 
 
     return 0;
