@@ -12,27 +12,33 @@
 
 struct Node {
     int key;
-    Node* left,*right,*parent;
+    Node* left, *right, *parent;
 };
 
-class STree {
+class ST {
 public:
-
-    STree();
+    ST();
+    ~ST();
 
     void insert(Node* i);
-    Node* getRoot();
-    void setRoot(Node* nr);
+    Node* getGoodNode(int k);
+    void splay(Node* x);
+    void lRotate(Node* x);
+    void rRotate(Node* x);
+    Node* search(int k);
+    Node* _search(int k, Node* r);
+    Node* maxElem(Node* x);
+    Node* minElem(Node* x);
+    Node* join(Node* l, Node* r);
+    std::pair <Node*, Node*> split(Node* t, int key);
+    void remove(int key);
+
+    void show();
+    void stackWrite();
 
 private:
     Node* root;
-    void rLeft(Node* x);
-    void rRight(Node* x);
-    void zig(Node* x);
-    void zigZig(Node* x);
-    void zigZag(Node* x);
-    void splay(Node* x);
-    Node* merge(Node* x, Node* y);
 };
+
 
 #endif //SPLAY_TREE_STREE_H

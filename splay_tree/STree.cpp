@@ -4,180 +4,270 @@
 
 #include "STree.h"
 
-void STree::setRoot(Node* nr) {
-    root = nr;
+#include <fstream>
+
+ST::ST() {
+    root = nullptr;
 }
 
-Node *STree::getRoot() {
-    return root;
+ST::~ST() {
+    ;
 }
 
-void STree::insert(Node *i) {
-    if (!root) {
-        root = i;
-        return;
-    }
+void ST::show() {
+    stackWrite();
+    system("./show_png.sh");
+}
+
+void ST::stackWrite() {
+    std::ofstream dotFile;
+    dotFile.open ("./gr.dot");
+    dotFile << "digraph BST {\n";
+    //dotFile << "\t" << "a" << " [fillcolor=red style=filled];";
+
+    std::stack <Node*> st;
+
     Node* cur = root;
+    int cnt = 0;
+
+    while (cur || !st.empty()) {
+        while (cur) {
+            st.push(cur);
+            cur = cur -> left;
+        }
+        cur = st.top();
+        st.pop();
+        if (cur -> left) {
+            dotFile << "\t" << cur -> key << " -> " << cur -> left -> key << ";\n";
+        }else {
+            dotFile << "\t" << "null" << cnt << " [shape=point]" << ";\n";
+            dotFile << "\t" << cur -> key << " -> " << "null" << cnt << ";\n";
+            cnt++;
+        }
+        if (cur -> right) {
+            dotFile << "\t" << cur -> key << " -> " << cur -> right -> key << ";\n";
+        } else {
+            dotFile << "\t" << "null" << cnt << " [shape=point]" << ";\n";
+            dotFile << "\t" << cur -> key << " -> " << "null" << cnt << ";\n";
+            cnt++;
+        }
+        cur = cur -> right;
+    }
+
+    dotFile << "}\n";
+    dotFile.close();
+}
+
+
+void ST::insert(Node *i) {
+    Node* cur = root;
+    Node* prev = nullptr;
     while (cur) {
-
-
-
-        if (cur -> key > i -> key) {
-            if (cur -> left) {
-                cur = cur -> left;
-            } else {
-                cur -> left = i;
-                i -> parent = cur;
-                return;
-            }
+        prev = cur;
+        if (i -> key < cur -> key) {
+            cur = cur -> left;
         } else {
-            if (cur -> right) {
-                cur = cur -> right;
-            } else {
-                cur -> right = i;
-                i -> parent = cur;
-                return;
-            }
-        }
-    }
-}
-
-STree::STree() : root(nullptr)
-{
-
-}
-
-void STree::rLeft(Node* x) {
-    if (!x) {
-        return;
-    }
-
-    Node* y = x -> parent;
-    if (x -> parent) {
-        if (x -> left) {
-            x -> parent -> right = x -> left;
-            x -> left -> parent = x -> parent;
-        } else {
-            x -> parent -> right = nullptr;
+            cur = cur -> right;
         }
 
-        if (x -> parent -> parent) {
-            if (x -> parent == x -> parent -> parent -> left) {
-                x -> parent -> parent -> left = x;
-                x -> parent = x -> parent -> parent;
-            } else {
-                x -> parent -> parent -> right = x;
-                x -> parent = x -> parent -> parent;
-            }
+    }
+
+    i -> parent = prev;
+    if (prev == nullptr) {
+        root = i;
+    }
+    else if (i -> key < prev -> key) {
+        prev -> left = i;
+    } else {
+        prev -> right = i;
+    }
+
+    splay(i);
+}
+
+
+void ST::rRotate(Node *y) {
+    Node* x = y -> left;
+    y -> left = x -> right;
+    if (x -> right) {
+        x -> right -> parent = y;
+    }
+    x -> parent = y -> parent;
+    if (y -> parent) {
+        if (y == y -> parent -> left) {
+            y -> parent -> left = x;
         } else {
-            root = x;
+            y -> parent -> right = x;
         }
     } else {
-        return;
+        root = x;
     }
-
-    //Node* y = x -> parent;
-    x -> left = y;
-    y -> parent = x;
-
-}
-
-
-void STree::rRight(Node* x) {
-    if (!x) {
-        return;
-    }
-
-    Node* y = x -> parent;
-    if (x -> parent) {
-        if (x -> right) {
-            x -> parent -> left = x -> right;
-            x -> right -> parent = x -> parent;
-        } else {
-            x -> parent -> left = nullptr;
-        }
-
-        if (x -> parent -> parent) {
-            if (x -> parent == x -> parent -> parent -> left) {
-                x -> parent -> parent -> left = x;
-                x -> parent = x -> parent -> parent;
-            } else {
-                x -> parent -> parent -> right = x;
-                x -> parent = x -> parent -> parent;
-            }
-        } else {
-            root = x;
-        }
-    } else {
-        return;
-    }
-
     x -> right = y;
     y -> parent = x;
 }
 
-void STree::zig(Node *x) {
-    if (x -> parent && x -> parent == root) {
+void ST::lRotate(Node *x) {
+    Node* y = x -> right;
+    x -> right = y -> left;
+    if (y -> left) {
+        x -> right = y -> left;
+        y -> left -> parent = x;
+    }
+    y -> parent = x -> parent;
+    if (x -> parent) {
         if (x == x -> parent -> left) {
-            rRight(x);
+            x -> parent -> left = y;
         } else {
-            rLeft(x);
+            x -> parent -> right = y;
         }
     } else {
-        return;
+        root = y;
     }
+    y -> left = x;
+    x -> parent = y;
 }
 
-void STree::zigZig(Node *x) {
-    if (x -> parent && x -> parent -> parent) {
-        if (x == x -> parent -> left && x -> parent == x -> parent -> parent -> left) {
-            rRight(x -> parent);
-            rRight(x);
-        } else if (x == x -> parent -> right && x -> parent == x -> parent -> parent -> right) {
-            rLeft(x -> parent);
-            rLeft(x);
-        }
-    } else return;
-}
+void ST::splay(Node *x) {
 
-void STree::zigZag(Node *x) {
-    if (x -> parent && x -> parent -> parent) {
-        if (x == x -> parent -> left && x -> parent == x -> parent -> parent -> right) {
-            rRight(x);
-            rLeft(x);
-        } else if (x == x -> parent -> right && x -> parent == x -> parent -> parent -> left) {
-            rLeft(x);
-            rRight(x);
+    while (x -> parent) {
+        if (x -> parent && !(x -> parent -> parent)) {
+            if (x == x -> parent -> left) {
+                rRotate(x -> parent);
+            } else {
+                lRotate(x -> parent);
+            }
         }
-    } else return;
-}
-
-void STree::splay(Node *x) {
-    if (x -> parent && x -> parent == root) {
-        zig(x);
-    } else if (x -> parent && x -> parent -> parent) {
-        if ((x == x -> parent -> left && x -> parent == x -> parent -> parent -> left) ||
-            (x == x -> parent -> right && x -> parent == x -> parent -> parent -> right))
-        {
-            zigZig(x);
+        else if (x -> parent && x -> parent -> parent && x == x -> parent -> left && x -> parent == x -> parent -> parent -> left) {
+            rRotate(x -> parent -> parent);
+            rRotate(x -> parent);
         }
-        else if ((x == x -> parent -> left && x -> parent == x -> parent -> parent -> right) ||
-                (x == x -> parent -> right && x -> parent == x -> parent -> parent -> left))
-        {
-            zigZag(x);
+        else if (x -> parent && x -> parent -> parent && x == x -> parent -> right && x -> parent == x -> parent -> parent -> right) {
+            lRotate(x -> parent -> parent);
+            lRotate(x -> parent);
+        }
+        else if (x -> parent && x -> parent -> parent && x == x -> parent -> left && x -> parent == x -> parent -> parent -> right) {
+            rRotate(x -> parent);
+            lRotate(x -> parent);
+        }
+        else if (x -> parent && x -> parent -> parent && x == x -> parent -> right && x -> parent == x -> parent -> parent -> left) {
+            lRotate(x -> parent);
+            rRotate(x -> parent);
         }
     }
 }
 
-Node* STree::merge(Node *x, Node* y) {
+Node *ST::getGoodNode(int k) {
+    auto n = new Node;
+    n -> key = k;
+    n -> left = n -> right = n -> parent = nullptr;
+    return n;
+}
+
+Node* ST::search(int k) {
+    Node* cur = root;
+    Node* prev = nullptr;
+    while (cur) {
+        prev = cur;
+        if (cur -> key == k) {
+            splay(cur);
+            return cur;
+        }
+        else if (k < cur -> key) {
+            cur = cur -> left;
+        } else {
+            cur = cur -> right;
+        }
+    }
+    if (prev) {
+        splay(prev);
+    }
+    return nullptr;
+}
+
+Node *ST::minElem(Node *x) {
+    if (!x)
+        return nullptr;
+
+    Node* cur = x;
+    while (cur -> left) {
+        cur = cur -> left;
+    }
+    return cur;
+}
+
+Node *ST::maxElem(Node *x) {
+    if (!x)
+        return nullptr;
+
     Node* cur = x;
     while (cur -> right) {
         cur = cur -> right;
     }
-
-    splay(cur);
-    cur -> right = y;
     return cur;
 }
 
+Node* ST::join(Node *l, Node *r) {
+    Node* nr = maxElem(l);
+    _search(nr -> key, l);
+    nr -> right = r;
+    r -> parent = nr;
+    return nr;
+}
+
+Node *ST::_search(int k, Node *r) {
+    Node* cur = r;
+    Node* prev = nullptr;
+    while (cur) {
+        prev = cur;
+        if (cur -> key == k) {
+            splay(cur);
+            return cur;
+        }
+        else if (k < cur -> key) {
+            cur = cur -> left;
+        } else {
+            cur = cur -> right;
+        }
+    }
+    if (prev) {
+        splay(prev);
+    }
+    return nullptr;
+}
+
+std::pair<Node *, Node *> ST::split(Node *t, int key) {
+    _search(key, t);
+    if (t -> key < key) {
+        Node* r = t -> right;
+        r -> parent = nullptr;
+        t -> right = nullptr;
+        return std::make_pair(t, r);
+    } else {
+        Node* l = t -> left;
+        l -> parent = nullptr;
+        t -> left = nullptr;
+        return std::make_pair(l,t);
+    }
+}
+
+void ST::remove(int key) {
+    Node* n = search(key);
+    if (n) {
+        Node* y = n -> parent;
+        if (y) {
+            Node* nr = join(n -> left, n -> right);
+            nr -> parent = y;
+            if (n == n -> parent -> left) {
+                y -> left = nr;
+            } else {
+                y -> right = nr;
+            }
+        } else {
+
+            Node* nr = join(n -> left, n -> right);
+            nr -> parent = nullptr;
+            root = nr;
+        }
+    }
+}
 

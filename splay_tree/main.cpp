@@ -2,23 +2,28 @@
 #include "STree.h"
 
 #include <vector>
+#include <algorithm>
+#include <utility>
+#include <cmath>
+
 using std::vector;
 using std::cin;
 using std::cout;
 
 int main() {
-    STree t;
-    vector <Node*> vec;
-    int c;
-    cin >> c;
-    for (int i = 0; i < c; i++) {
-        Node* ne = new Node;
-        ne -> key = (i*i);
-        ne -> left = nullptr;
-        ne -> right = nullptr;
-        ne -> parent = nullptr;
-        vec.push_back(ne);
+
+    ST t;
+    Node* n;
+    for (int i = 1; i <= 10; i++) {
+        n  = t.getGoodNode(i);
+        t.insert(n);
     }
+    n  = t.getGoodNode(-1);
+    t.insert(n);
+    t.show();
+
+    Node* f = t.search(100);
+
 
     return 0;
 }
