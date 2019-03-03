@@ -6,7 +6,6 @@ using std::vector;
 int main() {
     PRBT t;
 
-
     Node* f;
     vector <Node*> vec;
     for (int i = 1; i < 10; i++) {
@@ -21,6 +20,16 @@ int main() {
         t.pDelete(i);
     }
 
+    t.pInsert(t.getGoodNode(5));
+
+    t.show(13);
 
     return 0;
 }
+
+/*
+ *
+ * TODO:
+ * - show a tree instead of a graph wuth graphviz (attributes like left, right chil and parent)
+ *
+ */

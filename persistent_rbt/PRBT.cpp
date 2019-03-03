@@ -620,7 +620,9 @@ void PRBT::fixDeletion(Node *x, int ind, bool isNil) {
 
             }
         }
-        x -> color = false;
+
+        if (x)
+            x -> color = false;
     }
 
 
@@ -717,7 +719,7 @@ void PRBT::pDelete(Node *i) {
 void PRBT::pInsert(Node *i) {
     auto nr = new Node;
 
-    if (!vers.roots.empty()) {
+    if (!vers.roots.empty() && vers.roots[vers.roots.size() - 1]) {
         *nr = *vers.roots[vers.roots.size() - 1];
     } else {
         nr = nullptr;
