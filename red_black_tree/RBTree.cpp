@@ -282,7 +282,7 @@ void RBTree::deleteNode(Node *z) {
                 ff = true;
                 nil = new Node;
                 nil -> color = 0;
-                //nil -> parent = y;
+
             }
 
         }
@@ -320,7 +320,6 @@ void RBTree::deleteNode(Node *z) {
 
 void RBTree::fixDeletion(Node *x) {
 
-    //show();
     while (x != root && x -> color == 0) {
 
 
@@ -342,8 +341,6 @@ void RBTree::fixDeletion(Node *x) {
             }
             else if ((w && w -> right -> color == 0) || (w && !(w -> right))) {
 
-
-                /// WARNING
 
                 if (w -> left)
                     w -> left -> color = 0;
@@ -378,8 +375,6 @@ void RBTree::fixDeletion(Node *x) {
             }
             else if ((w && w -> left -> color == 0) || (w && !(w -> left))) {
 
-
-                /// WARNING
 
                 if (w -> right)
                     w -> right -> color = 0;

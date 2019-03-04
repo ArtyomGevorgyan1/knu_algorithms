@@ -39,6 +39,8 @@ int main() {
         t.insert(f);
     }
 
+
+
     t.deleteNode(vec[0]);
     t.show();
 

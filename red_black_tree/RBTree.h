@@ -13,6 +13,7 @@ struct Node {
     Node* left, *right , *parent;
     int key;
     bool color;
+    int sz;
 };
 
 class RBTree {
