@@ -10,18 +10,6 @@ using std::cout;
 
 #include "RBTree.h"
 
-void deb(Node* f) {
-    if (f) {
-        if (f -> left) {
-            deb(f -> left);
-        }
-        cout << f -> key << " ";
-        if (f -> right) {
-            deb(f -> right);
-        }
-    }
-}
-
 int main() {
     RBTree t;
 
