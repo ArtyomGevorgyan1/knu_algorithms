@@ -169,7 +169,9 @@ void PRBT::insertFixup(Node *z, int ind) {
         vers.roots[ind] -> color = false;
     }
 
-
+    int sdfsdf  = 5;
+    if (sdfsdf == 5)
+        cout << sdfsdf;
 
 }
 
@@ -717,6 +719,7 @@ void PRBT::pDelete(Node *i) {
 }
 
 void PRBT::pInsert(Node *i) {
+
     auto nr = new Node;
 
     if (!vers.roots.empty() && vers.roots[vers.roots.size() - 1]) {
@@ -725,6 +728,8 @@ void PRBT::pInsert(Node *i) {
         nr = nullptr;
     }
 
+    cout << "done\n";
+
     vers.roots.push_back(nr);
 
     Node* prev = nullptr;
@@ -732,9 +737,11 @@ void PRBT::pInsert(Node *i) {
     while (cur) {
         prev = cur;
         if (i -> key < cur -> key) {
-            auto nl = new Node;
-            if (cur -> left)
+            Node* nl;
+            if (cur -> left) {
+                nl = new Node;
                 *nl = *cur -> left;
+            }
             else
                 nl = nullptr;
 
@@ -742,18 +749,45 @@ void PRBT::pInsert(Node *i) {
                 nl -> parent = cur;
             cur -> left = nl;
 
+            Node* nr;
+            if (cur ->  right) {
+                nr = new Node;
+                *nr = *cur->right;
+            }
+            else
+                nr = nullptr;
+
+            if (nr) {
+                nr -> parent = cur;
+            }
+            cur -> right = nr;
+
             cur = cur -> left;
         } else {
-            auto nl = new Node;
-
-            if (cur -> right)
-                *nl = *cur -> right;
+            Node* nl;
+            if (cur -> left) {
+                nl = new Node;
+                *nl = *cur -> left;
+            }
             else
                 nl = nullptr;
 
             if (nl)
                 nl -> parent = cur;
-            cur -> right = nl;
+            cur -> left = nl;
+
+            Node* nr;
+            if (cur ->  right) {
+                nr = new Node;
+                *nr = *cur->right;
+            }
+            else
+                nr = nullptr;
+
+            if (nr) {
+                nr -> parent = cur;
+            }
+            cur -> right = nr;
 
             cur = cur -> right;
         }
