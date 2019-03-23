@@ -3,4 +3,3 @@
 //
 
 #include "B_tree.h"
-const char* str = "privet ty loh\n";
