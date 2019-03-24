@@ -17,6 +17,7 @@ class OBT {
 public:
     void accept();
     void calc();
+    void show();
     Node* construct(int i, int j);
 private:
     int sz;

@@ -29,7 +29,7 @@ int main() {
 
 
 
-    t.deleteNode(vec[0]);
+    //t.deleteNode(vec[0]);
     t.show();
 
     return 0;

@@ -22,6 +22,5 @@ int main() {
 
     OBT t;
     t.accept();
-
     return 0;
 }

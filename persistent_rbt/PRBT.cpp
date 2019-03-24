@@ -633,42 +633,6 @@ void PRBT::fixDeletion(Node *x, int ind, bool isNil) {
 
 // PARTIAL PERSISTENCE FUNCTIONS, BEING TESTED
 
-/*
-void PRBT::pDelete(Node *i) {
-    Node* nr = new Node;
-    vers.roots.push_back(nr);
-    if (vers.roots.size() > 1) {
-        nr = vers.roots[vers.roots.size() - 2];
-    } else {
-        nr = nullptr;
-    }
-    Node* cur = nr;
-    while (cur) {
-        if (i -> key == cur -> key) {
-            deleteNode(cur);
-        }
-        else if (i -> key < cur -> key) {
-            Node* nl = new Node;
-            nl = cur -> left;
-            if (nl)
-                nl -> parent = cur;
-            cur -> left = nl;
-            cur = cur -> left;
-        } else {
-            Node* nl = new Node;
-            nl = cur -> right;
-
-            if (nl)
-                nl -> parent = cur;
-            cur -> right = nl;
-            cur = cur -> right;
-        }
-    }
-}
-
- */
-
-
 // the i node must be in the tree
 void PRBT::pDelete(Node *i) {
 
@@ -690,9 +654,11 @@ void PRBT::pDelete(Node *i) {
             break;
         }
         else if (i -> key < cur -> key) {
-            auto nl = new Node;
-            if (cur -> left)
+            Node* nl;
+            if (cur -> left) {
+                nl = new Node;
                 *nl = *cur -> left;
+            }
             else
                 nl = nullptr;
 
@@ -700,18 +666,45 @@ void PRBT::pDelete(Node *i) {
                 nl -> parent = cur;
             cur -> left = nl;
 
+            Node* nr;
+            if (cur ->  right) {
+                nr = new Node;
+                *nr = *cur->right;
+            }
+            else
+                nr = nullptr;
+
+            if (nr) {
+                nr -> parent = cur;
+            }
+            cur -> right = nr;
+
             cur = cur -> left;
         } else {
-            auto nl = new Node;
-
-            if (cur -> right)
-                *nl = *cur -> right;
+            Node* nl;
+            if (cur -> left) {
+                nl = new Node;
+                *nl = *cur -> left;
+            }
             else
                 nl = nullptr;
 
             if (nl)
                 nl -> parent = cur;
-            cur -> right = nl;
+            cur -> left = nl;
+
+            Node* nr;
+            if (cur ->  right) {
+                nr = new Node;
+                *nr = *cur->right;
+            }
+            else
+                nr = nullptr;
+
+            if (nr) {
+                nr -> parent = cur;
+            }
+            cur -> right = nr;
 
             cur = cur -> right;
         }

@@ -215,7 +215,98 @@ public:
             }
             else
             {
-                ;// todo fuasdfasdfasdfsadfasdf
+                unsigned i = 1;
+                while (i <= get_cnt(src) && key > get_key(src, i)) {
+                    ++i;
+                }
+                shared_node_t <T> c = get_child(src, i);
+                if (get_cnt(c) == m_balance_factor - 1) {
+
+
+                    // left
+                    // todo check these functions!
+                    //check?
+                    if (i >= 2 && get_cnt(get_child(src, i - 1)) >= m_balance_factor) {
+                        shared_node_t <T> c = get_child(src, pos);
+                        shared_node_t <T> l = get_child(src, pos - 1);
+
+                        // move c to the right
+                        unsigned k = 1;
+                        while (k <= get_cnt(c)) {
+                            get_key(c, k + 1) = get_key(c, k);
+                            ++k;
+                        }
+                        k = 1;
+                        while (k <= get_cnt(c) + 1){
+                            get_child(c, k + 1) = get_child(c, k);
+                            ++k;
+                        }
+
+                        get_key(c, 1) = get_key(src, pos);
+                        get_child(c, 1) = get_child(l, get_cnt(l) + 1);
+                        get_key(src, pos) = get_key(l, get_cnt(l));
+                        --(get_cnt(l));
+
+                        remove(c, key);
+                    }
+                    //right todo check!!!!!!!!!! обнуляем j????
+                    // check?
+                    else if (i <= get_cnt(src) && get_cnt(get_child(src, i + 1)) >= m_balance_factor) {
+                        shared_node_t <T> c = get_child(src, pos);
+                        shared_node_t <T> r = get_child(src, pos + 1);
+                        get_key(c, get_cnt(c) + 1) = get_key(src, pos);
+                        get_child(c, get_cnt(c) + 2) = get_child(r, 1);
+                        get_key(src, pos) = get_child(src, pos + 1);
+                        ++get_cnt(c);
+                        unsigned j = 1;
+                        while (j <= get_cnt(r) - 1) {
+                            get_key(r, j) = get_key(r, j + 1);
+                            ++j;
+                        }
+                        j = 0;
+                        while (j <= get_cnt(r)) {
+                            get_child(r, j) = get_child(r, j + 1);
+                            ++j;
+                        }
+                        --get_cnt(r);
+                        remove(c, key);
+                    }
+
+                }
+                if (i >= 2 && i <= get_cnt(src) &&
+                    get_cnt(get_child(src, i - 1)) == m_balance_factor - 1 &&
+                    get_cnt(get_child(src, i + 1)) == m_balance_factor - 1 &&
+                    get_cnt(get_child(src, i)) == m_balance_factor - 1)
+                {
+                    //shared_node_t <T> l = get_child(src, i - 1);
+                    shared_node_t <T> r = get_child(src, i + 1);
+                    shared_node_t <T> c = get_child(src, i);
+                    get_key(c, get_cnt(c) + 1) = get_key(src, pos);
+                    ++(get_cnt(c));
+
+                    unsigned k = 1;
+                    while (k <= get_cnt(r))
+                    {
+                        get_key(c, get_cnt(c) + k) = get_key(r, k);
+                        get_child(c, get_cnt(c) + k) = get_child(r, k);
+                        ++k;
+                    }
+                    get_child(c, get_cnt(c) + get_cnt(r) + 1) = get_child(r, get_cnt(r) + 1);
+                    get_cnt(c) += get_cnt(r) + 1;
+
+                    k = pos;
+                    while (k <= get_cnt(src) - 1) {
+                        get_key(src, k) = get_key(src, k + 1);
+                        ++k;
+                    }
+
+                    k = pos;
+                    while (k <= get_cnt(src) - 1) {
+                        get_child(src, k + 1) = get_child(src, k + 2);
+                    }
+
+                    remove(c, key);
+                }
             }
         }
 

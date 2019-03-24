@@ -47,8 +47,6 @@ void OBT::accept() {
 
     std::cout << mabs(1 - sum);
 
-
-
     calc();
 }
 
