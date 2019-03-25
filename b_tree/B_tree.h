@@ -14,6 +14,9 @@
 #include <vector>
 #include <algorithm>
 #include <iostream>
+#include <stack>
+#include <fstream>
+#include <string>
 
 
 template <typename T> class Node;
@@ -48,8 +51,8 @@ struct Node {
     {
         m_is_leaf = true;
         m_count = 0;
-        m_keys.resize(balance_factor + 1);
-        m_children.resize(balance_factor + 2);
+        m_keys.resize(2 * balance_factor);
+        m_children.resize(2 * balance_factor + 1);
     }
 
     vector <shared_ptr<Node<T>>> m_children;
@@ -105,7 +108,8 @@ public:
         z -> m_is_leaf = y -> m_is_leaf;
         get_cnt(z) = m_balance_factor - 1;
         for (int j = 1; j <= m_balance_factor - 1; j++) {
-            get_key(z, j) = get_key(y, j + m_balance_factor);
+            //get_key(z, j) = get_key(y, j + m_balance_factor);
+            z -> m_keys[j] = y -> m_keys[j + m_balance_factor];
         }
         if (!(y -> m_is_leaf)) {
             for (int j = 1; j <= m_balance_factor; j++) {
@@ -117,15 +121,17 @@ public:
         get_cnt(y) = m_balance_factor - 1;
 
         // insert median
-        for (int j = src -> m_children_count + 1; j >= i + 1; --j) {
+        for (int j = src -> m_count + 1; j >= i + 1; --j) {
             get_child(src, j + 1) = get_child(src, j);
         }
         get_child(src, i + 1) = z;
 
-        for (int j = src -> m_children_count; j >= i; --j) {
-            get_key(src, j + 1) = get_key(src, j);
+        for (int j = src -> m_count; j >= i; --j) {
+//            get_key(src, j + 1) = get_key(src, j);
+            src -> m_keys[j + 1] = src -> m_keys[j];
         }
-        get_key(src, i) = get_key(y, m_balance_factor);
+//        get_key(src, i) = get_key(y, m_balance_factor);
+            src -> m_keys[i] = y -> m_keys[m_balance_factor];
 
         ++get_cnt(src);
     }
@@ -222,7 +228,6 @@ public:
                 shared_node_t <T> c = get_child(src, i);
                 if (get_cnt(c) == m_balance_factor - 1) {
 
-
                     // left
                     // todo check these functions!
                     //check?
@@ -315,6 +320,20 @@ public:
 
     }
 
+    void stackWrite() {
+        std::ofstream dotFile;
+        dotFile.open ("./gr.dot");
+        dotFile << "digraph {\n";
+        //dotFile << "\t" << "a" << " [fillcolor=red style=filled];";
+
+        write(dotFile, m_root, nullptr);
+
+        dotFile << "}\n";
+        dotFile.close();
+
+        system("./show_png.sh");
+    }
+
 
 // m_child_count должен быть keys_count
 
@@ -334,7 +353,7 @@ private:
                 --i;
             }
             src -> m_keys[i + 1] = make_shared<T>(key);
-            ++(src -> m_children_count);
+            ++(src -> m_count);
         } else {
             while (i >= 1 && key.getKey() < get_key(src, i)) {
                 --i;
@@ -400,6 +419,32 @@ private:
         src -> m_children[get_cnt(src)] = src -> m_children[get_cnt(src) + 1];
         --(get_cnt(src));
     }
+
+    void write(std::ofstream &dotFile, shared_node_t <T> src, shared_node_t <T> p)
+    {
+
+        if (p)
+        {
+            dotFile << "\t" << "\"" << p.get() << "\"" <<  " -> child" << "n" << src.get() << "n" << ";\n";
+        }
+
+        for (int i = 1; i <= src -> m_count; i++)
+        {
+            dotFile << "\t" << "\"" << src.get() << "\" -> key" <<  src -> m_keys[i] -> getKey() << ";\n";
+        }
+
+        if (!(src -> m_is_leaf)) {
+
+            for (int i = 1; i <= get_cnt(src) + 1; i++)
+            {
+                write(dotFile, get_child(src, i), src);
+            }
+        }
+    }
+
+
+
+
 
 };
 
