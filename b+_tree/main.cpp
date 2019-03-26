@@ -78,6 +78,98 @@ public:
     };
 
 
+    // 2t keys, we split seems good
+    void split(shared_node_t <T> src, const T &key) {
+        // move left / right pointers
+
+        shared_node_t<T> n = make_shared<shared_node_t<T>>(m_balance_factor, src->m_is_leaf, src->m_parent);
+        shared_ptr<T> mid = get_key(src, m_balance_factor + 1);
+        unsigned i = 1;
+
+        /// move keys
+        while (i <= m_balance_factor - 1) {
+            get_key(n, i) = get_key(src, 1 + m_balance_factor + i);
+            ++i;
+        }
+
+        i = 1;
+
+        // move children
+        while (i <= m_balance_factor) {
+            get_child(n, i) = get_child(src, m_balance_factor + 1 + i);
+            ++i;
+        }
+
+        get_cnt(n);
+
+
+        if (src -> m_is_leaf)
+        {
+            ++get_cnt(n);
+            n -> m_is_leaf = true;
+
+            unsigned i = 1;
+            while (i <= get_cnt(n))
+            {
+                get_key(n, i + 1) = get_key(n, i);
+            }
+            get_key(n, 1) = mid;
+            ++get_cnt(n);
+        }
+
+        if (src == m_root)
+        {
+            m_root = make_shared<Node <T>>(m_balance_factor, false, nullptr);
+            get_cnt(m_root) = 1;
+            get_child(m_root, 1) = src;
+            get_child(m_root, 2) = n;
+            get_key(m_root, 1) = mid;
+            src -> m_parent = m_root;
+            n -> m_parent = m_root;
+        }
+
+        else
+        {
+            n -> m_parent = src -> m_parent;
+            shared_node_t <T> parent = src -> m_parent;
+
+            unsigned pos = 1;
+
+            while (pos <= get_cnt(parent) && get_key(parent, pos) < mid.getKey())
+            {
+                ++(pos);
+            }
+
+            unsigned i = pos;
+            while (i <= get_cnt(parent))
+            {
+                get_key(parent, i + 1) = get_key(parent, i);
+                ++i;
+            }
+
+            i = pos;
+            while (i <= get_cnt(parent))
+            {
+                get_child(parent, i + 2) = get_child(parent, i + 1);
+            }
+
+            get_key(parent, pos) = mid;
+            get_child(parent, pos + 1) = mid;
+
+            i = pos + 1;
+            while (i <= get_cnt(parent) + 1)
+            {
+                get_child(parent, i + 1) = get_child(parent, i);
+                ++i;
+            }
+
+            ++get_cnt(parent);
+            if (get_cnt(parent) == 2 * m_balance_factor)
+            {
+                split(parent);
+            }
+        }
+    }
 
     // useless variable
     //unsigned m_counter;
