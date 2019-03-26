@@ -79,7 +79,7 @@ public:
 
 
     // 2t keys, we split seems good
-    void split(shared_node_t <T> src, const T &key) {
+    void split(shared_node_t <T> src) {
         // move left / right pointers
 
         shared_node_t<T> n = make_shared<shared_node_t<T>>(m_balance_factor, src->m_is_leaf, src->m_parent);
@@ -170,6 +170,69 @@ public:
             }
         }
     }
+
+    shared_node_t <T> find_leaf(T key)
+    {
+        shared_node_t <T> f = m_root;
+        while (!f -> m_is_leaf)
+        {
+            unsigned i = 1;
+            while (i <= get_cnt(f) && key.getKey() > get_key(f, i))
+            {
+                ++i;
+            }
+            f = get_child(f, i);
+        }
+
+        return f;
+    }
+
+    pair <shared_node_t <T>, unsigned> search(T key)
+    {
+        shared_node_t <T> f = find_leaf(key);
+        unsigned i = 1;
+        while (i <= get_cnt(f) && key.getKey() > get_key(f, i))
+        {
+            ++i;
+        }
+
+        if (i == get_cnt(f) + 1)
+        {
+            return std::make_pair(nullptr, 0);
+        } else
+        {
+            return std::make_pair(f, i);
+        }
+    }
+
+    bool insert(T key)
+    {
+        std::pair <shared_node_t <T>, unsigned > f = search(key);
+        if (f.first)
+        {
+            return false;
+        }
+
+        unsigned pos = 1;
+        while (pos <= get_cnt(f) && key.getKey() > get_key(f, pos))
+        {
+            ++pos;
+        }
+
+        unsigned i = pos;
+        while (i <= get_cnt(f))
+        {
+            get_key(f,i + 1) = get_key(f, i);
+        }
+        ++get_cnt(f);
+
+        if (2 * m_balance_factor == get_cnt(f))
+        {
+            split(f);
+        }
+    }
+
+
 
     // useless variable
     //unsigned m_counter;
