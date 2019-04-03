@@ -69,6 +69,7 @@ public:
         m_root = make_shared<Node<T>>(balance_factor);
     }
 
+
     pair <shared_node_t <T> , unsigned > search(T key)
     {
         shared_node_t <T> cur = m_root;
@@ -93,13 +94,12 @@ public:
         if (i == 2 * m_balance_factor)
         {
             // cur is where th key should be inserted
-            return make_pair<shared_node_t <T> , unsigned > (cur, -1);
+            return make_pair<shared_node_t <T> , unsigned > (std::move(cur), 0);
         } else
         {
-            return make_pair<shared_node_t <T> , unsigned > (cur, i);
+            return make_pair<shared_node_t <T> , unsigned > (std::move(cur), std::move(i));
         }
     }
-
 
     void insert(T key)
     {
@@ -108,7 +108,8 @@ public:
         auto info = search(key);
 
         // the key is already there
-        if (info.second != -1) return;
+        if (info.second != 0) return;
+
         else
         {
             leaf = info.first;
@@ -120,7 +121,8 @@ public:
             unsigned i = 1;
             while (i <= m_balance_factor)
             {
-                get_key(z, i) = get_key(leaf, i + m_balance_factor);
+                //get_key(z, i) = get_key(leaf, i + m_balance_factor);
+                z -> m_keys[i] = leaf -> m_keys[i + m_balance_factor];
                 ++i;
             }
 
@@ -133,7 +135,19 @@ public:
             }
 
             shared_node_t <T> parent = leaf -> m_parent;
-            insert(parent, get_key(leaf, get_cnt(leaf)));
+
+            if (!parent)
+            {
+                parent = make_shared<Node <T> >(m_balance_factor);
+                parent -> m_parent = parent -> m_left = parent -> m_right = nullptr;
+                m_root = parent;
+            }
+
+            leaf -> m_right = z;
+            z -> m_left = leaf;
+            z -> m_parent = leaf -> m_parent;
+
+            //insert(parent, get_key(leaf, get_cnt(leaf)));
 
         } else
         {
@@ -141,6 +155,8 @@ public:
         }
     }
 
+
+    // ok inserts T not unsigned
     void insert_trivial(shared_node_t <T> leaf, T key)
     {
         unsigned pos;
@@ -153,14 +169,13 @@ public:
         pos = i;
         while (i <= get_cnt(leaf))
         {
-            get_key(leaf, i + 1) = get_key(leaf, i);
+            leaf -> m_keys[i + 1] = leaf -> m_keys[i];
         }
         ++get_cnt(leaf);
 
-        get_key(leaf, pos) = key;
+        (leaf -> m_keys)[pos] = make_shared<T> (key);
     }
 
-// m_child_count должен быть keys_count
 
 private:
 
