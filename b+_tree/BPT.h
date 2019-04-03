@@ -40,7 +40,6 @@ private:
     unsigned m_key;
 };
 
-// Node вызывает само дерево извне оно невызывается запятые потерял
 template <typename T>
 struct Node {
 
@@ -69,15 +68,15 @@ public:
         m_root = make_shared<Node<T>>(balance_factor);
     }
 
-
     pair <shared_node_t <T> , unsigned > search(T key)
     {
         shared_node_t <T> cur = m_root;
+
         unsigned i;
         while (!cur -> m_is_leaf)
         {
             i = 1;
-            while (i <= get_cnt(cur))
+            while (i <= get_cnt(cur) && key.getKey() > get_key(cur, i))
             {
                 ++i;
             }
@@ -91,7 +90,7 @@ public:
             ++i;
         }
 
-        if (i == 2 * m_balance_factor)
+        if (i == get_cnt(cur) + 1)
         {
             // cur is where th key should be inserted
             return make_pair<shared_node_t <T> , unsigned > (std::move(cur), 0);
@@ -101,18 +100,24 @@ public:
         }
     }
 
-    void insert(T key)
+    void insert(T key, shared_node_t <T> source = nullptr)
     {
         shared_node_t <T> leaf;
-
-        auto info = search(key);
-
-        // the key is already there
-        if (info.second != 0) return;
-
+        if (source)
+        {
+            leaf = source;
+        }
         else
         {
-            leaf = info.first;
+            auto info = search(key);
+
+            // the key is already there
+            if (info.second != 0) return;
+
+            else
+            {
+                leaf = info.first;
+            }
         }
 
         if (get_cnt(leaf) == 2 * m_balance_factor)
@@ -121,17 +126,16 @@ public:
             unsigned i = 1;
             while (i <= m_balance_factor)
             {
-                //get_key(z, i) = get_key(leaf, i + m_balance_factor);
                 z -> m_keys[i] = leaf -> m_keys[i + m_balance_factor];
                 ++i;
             }
 
             if (key.getKey() > get_key(z, 1))
             {
-                insert_trivial(z, key);
+                insert_trivial(z, key, source == nullptr);
             } else
             {
-                insert_trivial(leaf, key);
+                insert_trivial(leaf, key, source == nullptr);
             }
 
             shared_node_t <T> parent = leaf -> m_parent;
@@ -140,40 +144,44 @@ public:
             {
                 parent = make_shared<Node <T> >(m_balance_factor);
                 parent -> m_parent = parent -> m_left = parent -> m_right = nullptr;
+                leaf -> m_parent = parent;
+                z -> m_parent = parent;
+                get_child(parent, 1) = leaf;
+                get_child(parent, 2) = z;
+
+                leaf -> m_right = z;
+                z -> m_left = leaf;
+
+                T dummy(get_key(leaf, get_cnt(leaf)));
+                parent ->m_keys[1] = make_shared<T>(dummy);
+
                 m_root = parent;
+                return;
             }
 
             leaf -> m_right = z;
             z -> m_left = leaf;
             z -> m_parent = leaf -> m_parent;
 
-            //insert(parent, get_key(leaf, get_cnt(leaf)));
+            T dummy(get_key(leaf, get_cnt(leaf)));
+            insert(dummy, parent);
 
         } else
         {
-            insert_trivial(leaf, key);
+            insert_trivial(leaf, key, source == nullptr);
         }
     }
 
-
     // ok inserts T not unsigned
-    void insert_trivial(shared_node_t <T> leaf, T key)
+    void insert_trivial(shared_node_t <T> leaf, T key, bool is_leaf)
     {
-        unsigned pos;
-        unsigned i = 1;
-        while (i <= get_cnt(leaf) && key.getKey() > get_key(leaf, i))
+        if (is_leaf)
         {
-            ++i;
-        }
 
-        pos = i;
-        while (i <= get_cnt(leaf))
+        } else
         {
-            leaf -> m_keys[i + 1] = leaf -> m_keys[i];
-        }
-        ++get_cnt(leaf);
 
-        (leaf -> m_keys)[pos] = make_shared<T> (key);
+        }
     }
 
 
