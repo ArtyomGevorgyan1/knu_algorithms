@@ -129,6 +129,8 @@ public:
                 z -> m_keys[i] = leaf -> m_keys[i + m_balance_factor];
                 ++i;
             }
+            get_cnt(z) += m_balance_factor;
+            get_cnt(leaf) = m_balance_factor;
 
             if (key.getKey() > get_key(z, 1))
             {
@@ -177,10 +179,49 @@ public:
     {
         if (is_leaf)
         {
+            unsigned i = 1;
+            while (i <= get_cnt(leaf) && key.getKey() > get_key(leaf, i))
+            {
+                ++i;
+            }
 
+            unsigned pos = i;
+
+            i = get_cnt(leaf);
+            while (i >= pos)
+            {
+                //get_key(leaf, i + 1) = get_key(leaf, i);
+                leaf -> m_keys[i + 1] = leaf -> m_keys[i];
+                --i;
+            }
+
+            //get_key(leaf, pos) = key;
+
+            leaf -> m_keys[pos] = make_shared<T>(key);
+            ++get_cnt(leaf);
         } else
         {
+            // shift children so as to make them correspond to the current positions of the keys
+            unsigned i = 1;
+            while (i <= get_cnt(leaf) && key.getKey() > get_key(leaf, i))
+            {
+                ++i;
+            }
 
+            unsigned pos = i;
+
+            i = get_cnt(leaf);
+            while (i >= pos)
+            {
+                //get_key(leaf, i + 1) = get_key(leaf, i);
+                leaf -> m_keys[i + 1] = leaf -> m_keys[i];
+                //get_child(leaf, i + 2) = get_child(leaf, i + 1);
+                leaf -> m_children[i + 2] = leaf -> m_children[i + 1];
+                --i;
+            }
+            get_child(leaf, pos + 1) = get_child(leaf, pos);
+            leaf -> m_keys[pos] = make_shared<T>(key);
+            ++get_cnt(leaf);
         }
     }
 
