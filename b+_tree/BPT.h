@@ -49,8 +49,8 @@ struct Node {
     {
         m_is_leaf = true;
         m_count = 0;
-        m_keys.resize(2 * balance_factor);
-        m_children.resize(2 * balance_factor + 1);
+        m_keys.resize(2 * balance_factor + 1);
+        m_children.resize(2 * balance_factor + 2);
     }
 
     vector <shared_ptr<Node<T>>> m_children;
