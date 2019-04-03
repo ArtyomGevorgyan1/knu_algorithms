@@ -129,7 +129,7 @@ public:
                 z -> m_keys[i] = leaf -> m_keys[i + m_balance_factor];
                 ++i;
             }
-            get_cnt(z) += m_balance_factor;
+            get_cnt(z) = m_balance_factor;
             get_cnt(leaf) = m_balance_factor;
 
             if (key.getKey() > get_key(z, 1))
@@ -146,10 +146,12 @@ public:
             {
                 parent = make_shared<Node <T> >(m_balance_factor);
                 parent -> m_parent = parent -> m_left = parent -> m_right = nullptr;
+                parent -> m_is_leaf = false;
                 leaf -> m_parent = parent;
                 z -> m_parent = parent;
                 get_child(parent, 1) = leaf;
                 get_child(parent, 2) = z;
+                ++get_cnt(parent);
 
                 leaf -> m_right = z;
                 z -> m_left = leaf;
