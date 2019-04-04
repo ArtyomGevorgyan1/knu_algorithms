@@ -125,10 +125,6 @@ public:
 
     void insert_trivial(shared_node_t <T> source, T key, shared_node_t <T> child = nullptr)
     {
-        if (source == m_root && child)
-        {
-            std::cout << "err\n";
-        }
         unsigned i = 1;
         while (i <= get_cnt(source) && key.getKey() > get_key(source, i))
         {
@@ -177,7 +173,10 @@ public:
 
         if (get_cnt(source) == 2 * m_balance_factor)
         {
-            split(source);
+            if (!source -> m_is_leaf)
+                split(source, false);
+            else
+                split(source, true);
             shared_node_t <T> z = source -> m_right;
             shared_node_t <T> parent = source -> m_parent;
             if (key.getKey() > get_key(z, 1))
@@ -196,7 +195,6 @@ public:
                 parent -> m_is_leaf = false;
                 m_root = parent;
 
-
                 get_child(parent, 1) = source;
                 get_child(parent, 2) = z;
                 source -> m_parent = parent;
@@ -206,6 +204,8 @@ public:
                 return;
             }
             T dummy(get_key(source, get_cnt(source)));
+
+            // засплитить тут?
 
             insert(dummy, parent, z);
         } else
