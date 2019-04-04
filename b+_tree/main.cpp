@@ -9,21 +9,24 @@ public:
     unsigned getKey() {
         return m;
     }
+
     unsigned m;
 };
 
+#include <gtest/gtest.h>
 
 int main()
 {
     B_tree <B> t(2);
-
-    unsigned i = 1;
-    while (i <= 10)
+    for (int i = 1; i <= 20; i++)
     {
-        auto f = B(i);
-        t.insert(f);
-        ++i;
+        B tt(i);
+        t.insert(tt);
     }
-
     return 0;
+}
+
+TEST(insert_trivial, test1)
+{
+
 }

@@ -13,6 +13,7 @@
 #include <vector>
 #include <string>
 #include <memory>
+#include <iostream>
 #include <algorithm>
 
 using std::vector;
@@ -70,38 +71,165 @@ public:
 
     pair <shared_node_t <T> , unsigned > search(T key)
     {
+
+        shared_node_t <T> cur = m_root;
+
+        unsigned i;
+        while (!cur -> m_is_leaf)
         {
-            shared_node_t <T> cur = m_root;
-
-            unsigned i;
-            while (!cur -> m_is_leaf)
-            {
-                i = 1;
-                while (i <= get_cnt(cur) && key.getKey() > get_key(cur, i))
-                {
-                    ++i;
-                }
-                cur = get_child(cur, i);
-            }
-
-            // look for the key
             i = 1;
-            while (i <= get_cnt(cur) && get_key(cur, i) != key.getKey())
+            while (i <= get_cnt(cur) && key.getKey() > get_key(cur, i))
             {
                 ++i;
             }
+            cur = get_child(cur, i);
+        }
 
-            if (i == get_cnt(cur) + 1)
-            {
-                // cur is where th key should be inserted
-                return make_pair<shared_node_t <T> , unsigned > (std::move(cur), 0);
-            } else
-            {
-                return make_pair<shared_node_t <T> , unsigned > (std::move(cur), std::move(i));
-            }
+        // look for the key
+        i = 1;
+        while (i <= get_cnt(cur) && get_key(cur, i) != key.getKey())
+        {
+            ++i;
+        }
+
+        if (i == get_cnt(cur) + 1)
+        {
+            // cur is where th key should be inserted
+            return make_pair<shared_node_t <T> , unsigned > (std::move(cur), 0);
+        } else
+        {
+            return make_pair<shared_node_t <T> , unsigned > (std::move(cur), std::move(i));
         }
     }
 
+    void split(shared_node_t <T> source, bool for_leaf = true)
+    {
+        shared_node_t <T> z = make_shared<Node <T>>(m_balance_factor);
+        z -> m_left = source;
+        source -> m_right = z;
+        z -> m_parent = source -> m_parent;
+
+        unsigned i = 1;
+        while (i <= m_balance_factor)
+        {
+            z -> m_keys[i] = source -> m_keys[i + m_balance_factor];
+            if (!for_leaf)
+                z -> m_children[i] = source -> m_children[i + m_balance_factor];
+            ++i;
+        }
+        if (!for_leaf)
+            z -> m_children[m_balance_factor + 1] = source -> m_children[m_balance_factor + 1];
+
+        get_cnt(z) = get_cnt(source) = m_balance_factor;
+    }
+
+    void insert_trivial(shared_node_t <T> source, T key, shared_node_t <T> child = nullptr)
+    {
+        if (source == m_root && child)
+        {
+            std::cout << "err\n";
+        }
+        unsigned i = 1;
+        while (i <= get_cnt(source) && key.getKey() > get_key(source, i))
+        {
+            ++i;
+        }
+
+        unsigned pos = i;
+        i = get_cnt(source);
+        while (i >= pos)
+        {
+
+            source -> m_keys[i + 1] = source -> m_keys[i];
+            source -> m_children[i + 2] = source -> m_children[i + 1];
+            i--;
+        }
+
+        auto dummy = make_shared<T>(key);
+        source -> m_keys[pos] = dummy;
+        ++get_cnt(source);
+
+        if (child)
+        {
+            if (get_child(source, pos) && key.getKey() > get_key(get_child(source, pos), get_cnt(get_child(source, pos))))
+            {
+                get_child(source, pos) = child;
+                child -> m_parent = source;
+            } else
+            {
+                get_child(source, pos + 1) = child;
+                child -> m_parent = source;
+            }
+        }
+
+    }
+
+    void insert(T key, shared_node_t <T> source = nullptr, shared_node_t <T> child = nullptr)
+    {
+        unsigned pos;
+        if (!source)
+        {
+            auto info = search(key);
+            if (info.second != 0) return;
+            source = info.first;
+            pos = info.second;
+        }
+
+        if (get_cnt(source) == 2 * m_balance_factor)
+        {
+            split(source);
+            shared_node_t <T> z = source -> m_right;
+            shared_node_t <T> parent = source -> m_parent;
+            if (key.getKey() > get_key(z, 1))
+            {
+                insert_trivial(z, key);
+            } else
+            {
+                insert_trivial(source, key);
+            }
+
+
+            if (!parent)
+            {
+                parent = make_shared<Node <T>>(m_balance_factor);
+                parent -> m_parent = parent -> m_right = parent -> m_left = nullptr;
+                parent -> m_is_leaf = false;
+                m_root = parent;
+
+
+                get_child(parent, 1) = source;
+                get_child(parent, 2) = z;
+                source -> m_parent = parent;
+                z -> m_parent = parent;
+                parent -> m_keys[1] = source -> m_keys[get_cnt(source)];
+                get_cnt(parent) = 1;
+                return;
+            }
+            T dummy(get_key(source, get_cnt(source)));
+
+            insert(dummy, parent, z);
+        } else
+        {
+            insert_trivial(source, key, child);
+        }
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    /*
     void insert(T key, shared_node_t <T> source = nullptr, shared_node_t <T> child = nullptr)
     {
         shared_node_t <T> leaf;
@@ -175,7 +303,7 @@ public:
             z -> m_left = leaf;
             z -> m_parent = leaf -> m_parent;
 
-            T dummy(get_key(leaf, get_cnt(leaf)));
+            T dummy(get_key(z, get_cnt(z)));
             insert(dummy, parent, z);
 
 
@@ -237,12 +365,13 @@ public:
             leaf -> m_keys[pos] = make_shared<T>(key);
             ++get_cnt(leaf);
         }
-    }
+    }*/
 
+    shared_node_t <T> m_root;
 private:
 
     // пр балансе надо смотреть не на m_counter а на кол-во узлов внутри !
-    shared_node_t <T> m_root;
+
     unsigned m_counter;
     unsigned m_balance_factor;
 };
