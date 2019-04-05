@@ -55,9 +55,63 @@ public:
 
     bool remove_from_root_list(shared_ptr <Node <T>> item)
     {
+        shared_ptr <Node <T>> cur = m_roots_head;
 
+        if (!cur)
+        {
+            return false;
+        }
 
-        --m_roots_count;
+        int counter = 0;
+
+        while (counter < m_roots_count)
+        {
+
+            if (cur -> m_key.getKey() == item -> m_key.getKey())
+            {
+                if (cur -> m_key.getKey() == m_roots_head -> m_key.getKey())
+                {
+                    if (m_roots_head == m_roots_tail)
+                    {
+                        m_roots_head = m_roots_tail = nullptr;
+                        m_roots_count--;
+                        return true;
+                    }
+                    shared_ptr <Node <T>> temp = m_roots_head -> m_right;
+                    m_roots_head = m_roots_head -> m_left;
+                    m_roots_head -> m_right = temp;
+                    temp -> m_left = m_roots_head;
+                    m_roots_count--;
+                    return true;
+
+                } else if (cur -> m_key.getKey() == m_roots_tail -> m_key.getKey())
+                {
+                    if (!m_roots_tail -> m_right)
+                    {
+                        m_roots_tail = m_roots_head = nullptr;
+                        m_roots_count--;
+                        return true;
+                    }
+                    shared_ptr <Node <T>> temp = m_roots_tail -> m_left;
+                    m_roots_tail = m_roots_tail -> m_right;
+                    m_roots_tail -> m_left = temp;
+                    temp -> m_right = m_roots_tail;
+                    m_roots_count--;
+                    return true;
+                } else
+                {
+                    shared_ptr <Node <T>> temp = cur -> m_right;
+                    cur = cur -> m_left;
+                    cur -> m_right = temp;
+                    temp -> m_left = cur;
+                    m_roots_count--;
+                    return true;
+                }
+            }
+            cur = cur -> m_right;
+            counter++;
+        }
+        return false;
     }
 
     shared_ptr <Node <T>> m_min;
