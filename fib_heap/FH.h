@@ -22,7 +22,7 @@ struct Node {
 
     T m_key;
     int m_degree;
-    shared_ptr <Node <T>> m_child, m_parent;
+    shared_ptr <Node <T>> m_child, m_parent, m_left, m_right;
     bool m_mark;
 };
 
@@ -30,55 +30,44 @@ template <typename T>
 class FH {
 public:
 
-    FH() : m_count(0), m_min(nullptr)
+    FH() : m_count(0), m_min(nullptr), m_roots_head(nullptr), m_roots_count(0)
     {
-        m_roots.resize(0);
+
     }
 
-    void insert(T key) {
-        shared_ptr<Node<T> > x = make_shared<Node<T> >(key);
-        if (!m_min) {
-            m_roots.push_back(x);
-            m_min = x;
-        } else {
-            m_roots.push_back(x);
-            if (m_min->m_key.getKey() > x->m_key.getKey()) {
-                m_min = x;
-            }
-        }
-        ++m_count;
-    }
-
-    shared_ptr <FH> unite(shared_ptr <FH> &first, shared_ptr <FH> &second)
+    void insert_to_root_list(shared_ptr <Node <T>> item)
     {
-        shared_ptr <FH> z = make_shared <FH>();
-        z -> m_min = first -> m_min;
-
-        for (unsigned i = 0; i < first -> m_roots.size(); ++i)
+        if (m_roots_head == m_roots_tail  && m_roots_head  == nullptr)
         {
-            z -> m_roots.push_back(first -> m_roots[i]);
+            m_roots_head = m_roots_tail = item;
+            m_roots_head -> m_right = m_roots_tail;
+            m_roots_tail -> m_left = m_roots_head;
         }
-
-        for (unsigned i = 0; i < second -> m_roots.size(); ++i)
+        else
         {
-            z -> m_roots.push_back(second -> m_roots[i]);
+            m_roots_head -> m_right = item;
+            m_roots_head = m_roots_head -> m_right;
+            m_roots_head -> m_right = m_roots_tail;
+            m_roots_tail -> m_left = m_roots_head;
         }
-
-        if (first -> m_min == nullptr || first -> m_min -> m_key.getKey() > second -> m_min -> m_key.getKey())
-        {
-            z -> m_min = second -> m_min;
-        }
-
-        z -> m_count = first -> m_count + second -> m_count;
-        return z;
+        ++m_roots_count;
     }
 
+    bool remove_from_root_list(shared_ptr <Node <T>> item)
+    {
 
+
+        --m_roots_count;
+    }
+
+    shared_ptr <Node <T>> m_min;
+    shared_ptr <Node <T>> m_roots_head, m_roots_tail;
+    unsigned m_count;
+    unsigned m_roots_count;
 
 private:
-    shared_ptr <Node <T>> m_min;
-    vector <shared_ptr <Node <T>> > m_roots;
-    unsigned m_count;
+
+
 };
 
 

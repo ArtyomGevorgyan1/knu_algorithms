@@ -1,0 +1,7 @@
+cmake_minimum_required(VERSION 3.13)
+project(fib_heap)
+set(CMAKE_CXX_STANDARD 14)
+add_subdirectory(googletest)
+include_directories(googletest/googletest/include)
+add_executable(fib_heap main.cpp FH.cpp FH.h)
+target_link_libraries(fib_heap gtest gtest_main)
