@@ -55,7 +55,7 @@ public:
 
     bool remove_from_root_list(shared_ptr <Node <T>> item)
     {
-        shared_ptr <Node <T>> cur = m_roots_head;
+        shared_ptr <Node <T>> cur = m_roots_tail;
 
         if (!cur)
         {

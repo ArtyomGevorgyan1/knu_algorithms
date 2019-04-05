@@ -56,6 +56,17 @@ TEST (insert_root_list, multiple) {
     int val = 0;
     while (cur && val < 5)
     {
+        if (val == 0)
+        {
+            EXPECT_EQ(cur -> m_left, nullptr);
+        } else if (val == 4)
+        {
+            EXPECT_EQ(cur -> m_right, nullptr);
+        } else
+        {
+            EXPECT_EQ(cur -> m_left -> m_key.getKey(), val - 1);
+            EXPECT_EQ(cur -> m_right -> m_key.getKey(), val + 1);
+        }
         EXPECT_EQ(cur -> m_key.getKey(), val);
         val++;
         cur = cur -> m_right;
@@ -96,7 +107,6 @@ TEST(remove_root_list, multiple)
         h.insert_to_root_list(ptr);
     }
 
-    /*
     // remove key 1
     h.remove_from_root_list(vec[1]);
     EXPECT_EQ(h.m_roots_count, 4);
@@ -108,7 +118,7 @@ TEST(remove_root_list, multiple)
     EXPECT_EQ(cur -> m_key.getKey(), 3);
     cur = cur -> m_right;
     EXPECT_EQ(cur -> m_key.getKey(), 4);
-
+    /*
     // remove key 0
     h.remove_from_root_list(vec[0]);
     EXPECT_EQ(h.m_roots_count, 3);
