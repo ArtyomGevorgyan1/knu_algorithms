@@ -37,18 +37,26 @@ public:
 
     void insert_to_root_list(shared_ptr <Node <T>> item)
     {
+        item -> m_left = item -> m_right = nullptr;
         if (m_roots_head == m_roots_tail  && m_roots_head  == nullptr)
         {
             m_roots_head = m_roots_tail = item;
+        } else if (m_roots_head == m_roots_tail)
+        {
+            m_roots_head = item;
+            m_roots_head -> m_left = m_roots_tail;
             m_roots_head -> m_right = m_roots_tail;
+            m_roots_tail -> m_right = m_roots_head;
             m_roots_tail -> m_left = m_roots_head;
+            m_roots_count = m_roots_count;
         }
         else
         {
             m_roots_head -> m_right = item;
-            m_roots_head = m_roots_head -> m_right;
-            m_roots_head -> m_right = m_roots_tail;
-            m_roots_tail -> m_left = m_roots_head;
+            item  -> m_left = m_roots_head;
+            m_roots_tail -> m_left = item;
+            item -> m_right = m_roots_tail;
+            m_roots_head = item;
         }
         ++m_roots_count;
     }
