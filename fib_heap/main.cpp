@@ -20,6 +20,8 @@ private:
     unsigned m_key;
 };
 
+/* tests for linked list
+
 TEST (insert_root_list, empty) {
     FH<Book> h;
     EXPECT_EQ(h.m_roots_head, h.m_roots_tail);
@@ -118,4 +120,6 @@ TEST(remove_root_list, multiple)
     // remove key 2
     // remove key 3
 }
+
+*/
 
