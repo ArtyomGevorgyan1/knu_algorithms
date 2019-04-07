@@ -82,6 +82,7 @@ class List
 {
 public:
 
+    // needs default constructor
 
     ListIterator <T> begin()
     {
@@ -92,8 +93,6 @@ public:
     {
         return ListIterator <T> (*this, m_count);
     }
-
-    /*NEEDS CONSTRUCTOR*/
 
     List <T> () : m_count(0), m_head(nullptr), m_tail(nullptr)
     {
@@ -126,7 +125,6 @@ public:
     }
 
     // debug
-    /*
     bool remove(shared_ptr <Node <T>> item)
     {
         shared_ptr <Node <T>> cur = m_tail;
@@ -186,10 +184,9 @@ public:
             counter++;
         }
         return false;
-    }*/
+    }
 
     //not tested at all
-    /*
     void join(shared_ptr <List> second)
     {
         shared_ptr <Node <T>> cur = second -> m_tail;
@@ -213,9 +210,6 @@ public:
             }
         }
     }
-     */
-
-    // todo iterator
 
     shared_ptr <Node <T>> m_head, m_tail;
     unsigned m_count;

@@ -13,13 +13,15 @@ using std::shared_ptr;
 using std::make_shared;
 using std::vector;
 
+
+// will be tested when list works
 template <typename T>
 class FH {
 public:
 
-    FH() : m_count(0), m_min(nullptr)
+    FH() : m_count(0), m_min(nullptr), m_root_list()
     {
-        // root list is intialized when insertion is done
+
     }
 
     shared_ptr <Node <T>> insert(T key)
@@ -36,8 +38,8 @@ public:
         x -> m_mark = false;
         if (m_min == nullptr)
         {
-            m_root_list();
             m_min = x;
+            m_root_list.insert(x);
         } else
         {
             m_root_list.insert(x);
