@@ -5,8 +5,6 @@
 #ifndef FIB_HEAP_LIST_H
 #define FIB_HEAP_LIST_H
 
-
-
 #include <memory>
 #include <vector>
 
@@ -14,10 +12,14 @@ using std::shared_ptr;
 using std::make_shared;
 using std::vector;
 
+
+template <typename T>
+class List;
+
 template <typename T>
 struct Node {
 
-    Node(T key) : m_key(key), m_degree(0), m_mark(false), m_child(nullptr), m_parent(nullptr)
+    explicit Node(T key) : m_key(key), m_degree(0), m_mark(false), m_child(nullptr), m_parent(nullptr), m_child_list()
     {
 
     }
@@ -25,6 +27,7 @@ struct Node {
     T m_key;
     int m_degree;
     shared_ptr <Node <T>> m_child, m_parent, m_left, m_right;
+    List <T> m_child_list;
     bool m_mark;
 };
 
@@ -103,7 +106,6 @@ public:
         item -> m_left = item -> m_right = nullptr;
         if (m_head == m_tail  && m_head  == nullptr)
         {
-            ////asdffffffffffffffffffffffffffffffASFDFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
             item -> m_left = item -> m_right = item;
             m_head = m_tail = item;
         } else if (m_head == m_tail)
@@ -197,28 +199,11 @@ public:
         }
     }
 
-    //not tested at all
-    void join(shared_ptr <List> second)
+    void join(shared_ptr < List <T> > second)
     {
-        shared_ptr <Node <T>> cur = second -> m_tail;
-
-        if (!cur) return;
-
-        if (cur == second -> m_head)
+        for (auto i : *second)
         {
-            insert(cur);
-            return;
-        }
-
-        while (cur && cur != second -> m_head)
-        {
-            insert(cur);
-            cur = cur -> m_right;
-            if (cur == second -> m_head)
-            {
-                insert(cur);
-                break;
-            }
+            insert(i);
         }
     }
 

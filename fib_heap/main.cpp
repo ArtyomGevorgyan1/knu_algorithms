@@ -20,6 +20,7 @@ private:
     unsigned m_key;
 };
 
+
 /* tests for linked list*/
 
 TEST (insert_root_list, empty) {
@@ -137,5 +138,82 @@ TEST(remove_root_list, multiple)
     // remove key 3
     h.m_root_list.remove(vec[3]);
     EXPECT_EQ(h.m_root_list.m_count, 0);
-
 }
+
+TEST(join_root_list, base)
+{
+    FH <Book> h;
+    for (int i = 0; i < 5; i++)
+    {
+        Book b(i);
+        h.insert(b);
+    }
+
+    FH <Book> h1;
+    for (int i = 5; i < 10; i++)
+    {
+        Book b(i);
+        h.insert(b);
+    }
+
+    auto ptr = make_shared<List <Book>>(h1.m_root_list);
+    h.m_root_list.join(ptr);
+
+    int cur = 0;
+    for (auto i : h.m_root_list)
+    {
+        EXPECT_EQ(i -> m_key.getKey(), cur);
+        cur++;
+    }
+}
+
+/* tests for fib heap functions*/
+
+// insert test
+
+TEST(fh_insert, base)
+{
+    FH <Book> h;
+    for (int i = 0; i < 5; i++)
+    {
+        Book b(i);
+        h.insert(b);
+    }
+    EXPECT_EQ(h.m_count, 5);
+}
+
+TEST(fh_unify, base)
+{
+    FH <Book> h1;
+    for (int i = 0; i < 5; i++)
+    {
+        Book b(i);
+        h1.insert(b);
+    }
+
+    FH <Book> h2;
+    for (int i = 5; i < 10; i++)
+    {
+        Book b(i);
+        h2.insert(b);
+    }
+
+    shared_ptr <FH <Book>> h = FH<Book>::unify(make_shared<FH <Book>>(h1), make_shared<FH <Book>>(h2));
+    EXPECT_EQ(h -> m_count, 10);
+    // etc ...
+}
+
+// todo добавить тесты на правильность выоплнения extract)
+TEST(fh_extract, base)
+{
+    FH <Book> h;
+    for (int i = 0; i < 10; i++)
+    {
+        Book b(i);
+        h.insert(b);
+    }
+
+    shared_ptr <Node <Book>> ret = h.extract_min();
+    EXPECT_EQ(ret -> m_key.getKey(), 0);
+}
+
