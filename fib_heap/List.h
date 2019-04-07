@@ -103,6 +103,8 @@ public:
         item -> m_left = item -> m_right = nullptr;
         if (m_head == m_tail  && m_head  == nullptr)
         {
+            ////asdffffffffffffffffffffffffffffffASFDFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+            item -> m_left = item -> m_right = item;
             m_head = m_tail = item;
         } else if (m_head == m_tail)
         {
@@ -124,66 +126,75 @@ public:
         ++m_count;
     }
 
-    // debug
-    bool remove(shared_ptr <Node <T>> item)
+    shared_ptr <Node <T>> search_by_value(T key)
     {
-        shared_ptr <Node <T>> cur = m_tail;
+        for (auto i : *this)
+        {
+            if (i -> m_key.getKey() == key.getKey())
+            {
+                return i;
+            }
+        }
+        return nullptr;
+    }
 
-        if (!cur)
+    shared_ptr <Node <T>> search_by_ref(shared_ptr <Node <T>> key)
+    {
+        for (auto i : *this)
+        {
+            if (i -> m_key.getKey() == key -> m_key.getKey())
+            {
+                return i;
+            }
+        }
+        return nullptr;
+    }
+
+    bool remove(shared_ptr <Node <T>> item, bool by_value = true)
+    {
+        if (!m_count)
         {
             return false;
         }
 
-        int counter = 0;
-
-        while (counter < m_count)
+        shared_ptr <Node <T>> to_remove;
+        if (by_value)
         {
-
-            if (cur -> m_key.getKey() == item -> m_key.getKey())
-            {
-                if (cur -> m_key.getKey() == m_head -> m_key.getKey())
-                {
-                    if (m_head == m_tail)
-                    {
-                        m_head = m_tail = nullptr;
-                        m_count--;
-                        return true;
-                    }
-                    shared_ptr <Node <T>> temp = m_head -> m_right;
-                    m_head = m_head -> m_left;
-                    m_head -> m_right = temp;
-                    temp -> m_left = m_head;
-                    m_count--;
-                    return true;
-
-                } else if (cur -> m_key.getKey() == m_tail -> m_key.getKey())
-                {
-                    if (!m_tail -> m_right)
-                    {
-                        m_tail = m_head = nullptr;
-                        m_count--;
-                        return true;
-                    }
-                    shared_ptr <Node <T>> temp = m_tail -> m_left;
-                    m_tail = m_tail -> m_right;
-                    m_tail -> m_left = temp;
-                    temp -> m_right = m_tail;
-                    m_count--;
-                    return true;
-                } else
-                {
-                    shared_ptr <Node <T>> temp = cur -> m_right;
-                    cur = cur -> m_left;
-                    cur -> m_right = temp;
-                    temp -> m_left = cur;
-                    m_count--;
-                    return true;
-                }
-            }
-            cur = cur -> m_right;
-            counter++;
+            to_remove = search_by_value(item -> m_key.getKey());
+        } else
+        {
+            to_remove = search_by_ref(item);
         }
-        return false;
+
+        if (to_remove)
+        {
+            // only child
+            if (to_remove -> m_right == nullptr && to_remove -> m_left == nullptr)
+            {
+                m_head = m_tail = nullptr;
+            } else
+            {
+                if (m_head == to_remove)
+                {
+                    m_head = m_head -> m_left;
+                    m_tail -> m_left = m_head;
+                } else if (m_tail == to_remove)
+                {
+                    m_tail = m_tail -> m_right;
+                    m_head -> m_right = m_tail;
+                }
+
+                auto prev = to_remove -> m_left, next = to_remove -> m_right;
+                prev -> m_right = next;
+                next -> m_left = prev;
+            }
+            m_count--;
+            return true;
+        } else
+        {
+            return false;
+            // todo throw exception instead
+        }
     }
 
     //not tested at all

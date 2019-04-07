@@ -37,8 +37,8 @@ TEST (insert_root_list, single) {
     EXPECT_NE(h.m_root_list.m_head, nullptr);
     EXPECT_EQ(h.m_root_list.m_head -> m_key.getKey(), 1);
     EXPECT_EQ(h.m_root_list.m_count, 1);
-    EXPECT_EQ(h.m_root_list.m_head -> m_right, nullptr);
-    EXPECT_EQ(h.m_root_list.m_tail -> m_right, nullptr);
+    EXPECT_EQ(h.m_root_list.m_head -> m_right, h.m_root_list.m_head);
+    EXPECT_EQ(h.m_root_list.m_tail -> m_right, h.m_root_list.m_head);
 }
 
 TEST (insert_root_list, multiple) {
@@ -92,11 +92,9 @@ TEST(remove_root_list, single)
     Book b(0);
     shared_ptr <Node <Book>> ptr = make_shared<Node <Book>>(b);
     h.insert_ptr(ptr);
-
     h.m_root_list.remove(ptr);
     EXPECT_EQ(h.m_root_list.m_count, 0);
     EXPECT_EQ(h.m_root_list.m_head, h.m_root_list.m_tail);
-    EXPECT_EQ(h.m_root_list.m_tail, nullptr);
 }
 
 
@@ -109,14 +107,35 @@ TEST(remove_root_list, multiple)
         Book b(i);
         shared_ptr <Node <Book>> ptr = make_shared<Node <Book>>(b);
         vec.push_back(ptr);
-        //h.insert_to_root_list(ptr);
+        h.m_root_list.insert(ptr);
     }
 
     // check that it leaves the list in a valid state
 
     // remove key 1
+    h.m_root_list.remove(vec[1]);
+    EXPECT_EQ(h.m_root_list.m_count, 4);
+    EXPECT_EQ(h.m_root_list.search_by_value(0) -> m_right -> m_key.getKey(), 2);
+    EXPECT_EQ(h.m_root_list.search_by_value(2) -> m_left -> m_key.getKey(), 0);
     // remove key 0
+    h.m_root_list.remove(vec[0]);
+    EXPECT_EQ(h.m_root_list.m_count, 3);
+    EXPECT_EQ(h.m_root_list.search_by_value(4) -> m_right -> m_key.getKey(), 2);
+    EXPECT_EQ(h.m_root_list.search_by_value(2) -> m_left -> m_key.getKey(), 4);
     // remove key 4
+    h.m_root_list.remove(vec[4]);
+    EXPECT_EQ(h.m_root_list.m_count, 2);
+    EXPECT_EQ(h.m_root_list.search_by_value(3) -> m_right -> m_key.getKey(), 2);
+    EXPECT_EQ(h.m_root_list.search_by_value(2) -> m_left -> m_key.getKey(), 3);
+    EXPECT_EQ(h.m_root_list.search_by_value(2) -> m_right -> m_key.getKey(), 3);
+    EXPECT_EQ(h.m_root_list.search_by_value(3) -> m_left -> m_key.getKey(), 2);
     // remove key 2
+    h.m_root_list.remove(vec[2]);
+    EXPECT_EQ(h.m_root_list.m_count, 1);
+    EXPECT_EQ(h.m_root_list.search_by_value(3) -> m_left -> m_key.getKey(), 3);
+    EXPECT_EQ(h.m_root_list.search_by_value(3) -> m_right -> m_key.getKey(), 3);
     // remove key 3
+    h.m_root_list.remove(vec[3]);
+    EXPECT_EQ(h.m_root_list.m_count, 0);
+
 }
