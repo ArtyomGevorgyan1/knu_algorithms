@@ -7,152 +7,11 @@
 
 #include <memory>
 #include <vector>
+#include "List.h"
 
 using std::shared_ptr;
 using std::make_shared;
 using std::vector;
-
-template <typename T>
-struct Node {
-
-    Node(T key) : m_key(key), m_degree(0), m_mark(false), m_child(nullptr), m_parent(nullptr)
-    {
-
-    }
-
-    T m_key;
-    int m_degree;
-    shared_ptr <Node <T>> m_child, m_parent, m_left, m_right;
-    bool m_mark;
-};
-
-
-template <typename T>
-class List
-{
-public:
-
-    /*NEEDS CONSTRUCTOR*/
-
-    List <T> () : m_count(0), m_head(nullptr), m_tail(nullptr)
-    {
-
-    }
-
-    void insert(shared_ptr <Node <T>> item)
-    {
-        item -> m_left = item -> m_right = nullptr;
-        if (m_head == m_tail  && m_head  == nullptr)
-        {
-            m_head = m_tail = item;
-        } else if (m_head == m_tail)
-        {
-            m_head = item;
-            m_head -> m_left = m_tail;
-            m_head -> m_right = m_tail;
-            m_tail -> m_right = m_head;
-            m_tail -> m_left = m_head;
-            m_count = m_count;
-        }
-        else
-        {
-            m_head -> m_right = item;
-            item  -> m_left = m_head;
-            m_tail -> m_left = item;
-            item -> m_right = m_tail;
-            m_head = item;
-        }
-        ++m_count;
-    }
-
-    // debug
-    bool remove(shared_ptr <Node <T>> item)
-    {
-        shared_ptr <Node <T>> cur = m_tail;
-
-        if (!cur)
-        {
-            return false;
-        }
-
-        int counter = 0;
-
-        while (counter < m_count)
-        {
-
-            if (cur -> m_key.getKey() == item -> m_key.getKey())
-            {
-                if (cur -> m_key.getKey() == m_head -> m_key.getKey())
-                {
-                    if (m_head == m_tail)
-                    {
-                        m_head = m_tail = nullptr;
-                        m_count--;
-                        return true;
-                    }
-                    shared_ptr <Node <T>> temp = m_head -> m_right;
-                    m_head = m_head -> m_left;
-                    m_head -> m_right = temp;
-                    temp -> m_left = m_head;
-                    m_count--;
-                    return true;
-
-                } else if (cur -> m_key.getKey() == m_tail -> m_key.getKey())
-                {
-                    if (!m_tail -> m_right)
-                    {
-                        m_tail = m_head = nullptr;
-                        m_count--;
-                        return true;
-                    }
-                    shared_ptr <Node <T>> temp = m_tail -> m_left;
-                    m_tail = m_tail -> m_right;
-                    m_tail -> m_left = temp;
-                    temp -> m_right = m_tail;
-                    m_count--;
-                    return true;
-                } else
-                {
-                    shared_ptr <Node <T>> temp = cur -> m_right;
-                    cur = cur -> m_left;
-                    cur -> m_right = temp;
-                    temp -> m_left = cur;
-                    m_count--;
-                    return true;
-                }
-            }
-            cur = cur -> m_right;
-            counter++;
-        }
-        return false;
-    }
-
-    //not tested at all
-    void join(shared_ptr <List> second)
-    {
-        shared_ptr <Node <T>> cur = second -> m_tail;
-
-        if (!cur) return;
-
-        while (cur && cur != second -> m_tail)
-        {
-            insert(cur);
-            cur = cur -> m_right;
-            if (cur && cur == second -> m_tail)
-            {
-                insert(cur);
-                break;
-            }
-        }
-    }
-
-    // not tested
-    // todo iterator
-    //
-
-    shared_ptr <Node <T>> m_head, m_tail;
-    unsigned m_count;
-};
 
 template <typename T>
 class FH {
@@ -210,19 +69,24 @@ public:
         shared_ptr <Node <T>> z = m_min;
         if (z)
         {
-            // add x to the root list
-            // x.p = nil
+            // add each child of z - x - to the root list
 
+            // x.p = nil
         }
         m_root_list.remove(z);
-        // if z is only child remove it
-        // else make its successor the nw min and call consolidate
+        if (z == m_root_list.m_head && m_root_list.m_head == m_root_list.m_tail)
+        {
+            m_min = nullptr;
+        } else
+        {
+            m_min = z -> m_right;
+            //consolidate();
+        }
         m_count--;
         return z;
     }
 
-
-
+    // this will be moved to private soon
     shared_ptr <Node <T>> m_min;
     unsigned m_count;
     List <T> m_root_list;
@@ -230,6 +94,5 @@ public:
 private:
 
 };
-
 
 #endif //FIB_HEAP_FH_H
