@@ -204,7 +204,6 @@ TEST(fh_unify, base)
     // etc ...
 }
 
-// todo добавить тесты на правильность выоплнения extract)
 TEST(fh_extract, base)
 {
     FH <Book> h;
@@ -219,4 +218,76 @@ TEST(fh_extract, base)
         auto min = h.extract_min();
         EXPECT_EQ(min -> m_key.getKey(), i);
     }
+}
+
+
+
+#include <fstream>
+#include <stack>
+using std::stack;
+
+/*
+vector <shared_ptr<Node <Book>>> get_children(shared_ptr <Node <Book>> src, ostream &o)
+{
+    vector <shared_ptr <Node <Book>>> vec;
+    for (auto i : src -> m_child_list)
+    {
+        vec.push_back(i);
+    }
+    return vec;
+}
+*/
+
+void walk(shared_ptr <Node <Book>> src, ostream &o)
+{
+    for (auto i : src -> m_child_list)
+    {
+        if(i -> m_right != i)
+        {
+            o << i -> m_key.getKey() << " -> " << i -> m_right -> m_key.getKey() << ";\n";
+        }
+        o << '\t' << src -> m_key . getKey() << " -> " << i -> m_key.getKey() << '\n';
+        walk(i, o);
+    }
+}
+
+void stackWrite(FH <Book> &h) {
+    ofstream dotFile;
+    dotFile.open ("./gr.dot");
+    dotFile << "digraph {\n";
+    //dotFile << "\t" << "a" << " [fillcolor=red style=filled];";
+
+    for (auto i : h.m_root_list)
+    {
+        dotFile << '\t' << i -> m_key.getKey() << " [fillcolor=red style=filled];" << '\n';
+        if (i -> m_right != i) {
+            dotFile << '\t' << i->m_key.getKey() << " -> " << i->m_right->m_key.getKey() << ";\n";
+            //dotFile << '\t' << i->m_key.getKey() << " -> " << i->m_left->m_key.getKey() << ";\n";
+        }
+        walk(i, dotFile);
+    }
+
+    dotFile << "}\n";
+    dotFile.close();
+}
+
+void show(FH <Book> &h) {
+    stackWrite(h);
+    system("./show_png.sh");
+}
+
+
+int main()
+{
+    FH <Book> h;
+    for (int  i= 0;  i< 10; i ++)
+    {
+        Book b(i);
+        h.insert(b);
+    }
+    for (int i = 0; i < 5; i++)
+    {
+        h.extract_min();
+    }
+    show(h);
 }
