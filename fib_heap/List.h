@@ -176,6 +176,13 @@ public:
                 m_head = m_tail = nullptr;
             } else
             {
+                if (m_head == to_remove && to_remove == m_tail)
+                {
+                    m_head = m_tail = nullptr;
+                    m_count--;
+                    return true;
+                }
+
                 if (m_head == to_remove)
                 {
                     m_head = m_head -> m_left;

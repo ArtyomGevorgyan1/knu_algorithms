@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <vector>
+#include <map>
 #include "List.h"
 
 #define MAGIC 1000
@@ -71,22 +72,28 @@ public:
         return ret;
     }
 
-    shared_ptr <Node <T>> extract_min()
+    shared_ptr <Node <T> >  extract_min()
     {
-        auto z = m_min;
-        if (z)
+        shared_ptr <Node <T>> z = m_min;
+        if (z != nullptr)
         {
+
+            vector <shared_ptr <Node <T>>> vec;
             for (auto x : z -> m_child_list)
             {
-                x -> m_parent = nullptr;
+                vec.push_back(x);
+            }
+
+            for (auto x : vec)
+            {
                 m_root_list.insert(x);
+                x -> m_parent = nullptr;
             }
             m_root_list.remove(z);
             if (z == z -> m_right)
             {
                 m_min = nullptr;
-            }
-            else
+            } else
             {
                 m_min = z -> m_right;
                 consolidate();
@@ -96,31 +103,52 @@ public:
         return z;
     }
 
-    void consolidate ()
+    void consolidate()
     {
         shared_ptr <Node <T>> A[MAGIC];
         for (int i = 0; i < MAGIC; i++)
         {
             A[i] = nullptr;
         }
+
+        std::map <shared_ptr <Node <T>>, bool> vis;
+
+        vector <shared_ptr <Node <T>>> vec;
         for (auto w : m_root_list)
         {
+            vec.push_back(w);
+        }
+
+        for (auto w : vec)
+        {
+            if (vis[w])
+            {
+                vis[w] = true;
+                continue;
+            }
             shared_ptr <Node <T>> x = w;
             unsigned d = x -> m_degree;
             while (A[d] != nullptr)
             {
                 shared_ptr <Node <T>> y = A[d];
-                if (x -> m_key.getKey() > y -> m_key.getKey())
-                {
-                    swap(x, y);
+                if (x -> m_key.getKey() > y -> m_key.getKey()) {
+                    x.swap(y);
                 }
                 link(y, x);
+                vis[y] = true;
                 A[d] = nullptr;
                 d++;
             }
+            vis[x] = true;
             A[d] = x;
         }
+
         m_min = nullptr;
+        for (auto j : vec)
+        {
+            m_root_list.remove(j);
+        }
+
         for (int i = 0; i < MAGIC; i++)
         {
             if (A[i] != nullptr)
@@ -141,7 +169,7 @@ public:
         }
     }
 
-    void link(shared_ptr <Node <T>> y, shared_ptr <Node <T>> x)
+    void link(shared_ptr <Node <T>> y, shared_ptr <Node<T>> x)
     {
         m_root_list.remove(y);
         x -> m_child_list.insert(y);
@@ -149,11 +177,7 @@ public:
         y -> m_mark = false;
     }
 
-
-
     // log2(n) + 1
-
-    // implement link
 
     // this will be moved to private soon
     shared_ptr <Node <T>> m_min;

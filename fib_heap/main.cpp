@@ -96,6 +96,7 @@ TEST(remove_root_list, single)
     h.m_root_list.remove(ptr);
     EXPECT_EQ(h.m_root_list.m_count, 0);
     EXPECT_EQ(h.m_root_list.m_head, h.m_root_list.m_tail);
+    EXPECT_EQ(h.m_root_list.m_head, nullptr);
 }
 
 
@@ -213,7 +214,9 @@ TEST(fh_extract, base)
         h.insert(b);
     }
 
-    shared_ptr <Node <Book>> ret = h.extract_min();
-    EXPECT_EQ(ret -> m_key.getKey(), 0);
+    for (int i = 0; i < 10; i++)
+    {
+        auto min = h.extract_min();
+        EXPECT_EQ(min -> m_key.getKey(), i);
+    }
 }
-
